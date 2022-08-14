@@ -26,29 +26,36 @@ export class SleepCyclesController {
   @ApiBearerAuth("Bearer")
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('all')
-  findOne(@Request() req) {
-    return this.sleepCyclesService.findOne(+req.user.id);
+  findAll(@Request() req) {
+    return this.sleepCyclesService.findAll(+req.user.id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('access-key')
+  @ApiBearerAuth("Bearer")
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('info')
+  getInfo(@Request() req) {
+    return this.sleepCyclesService.getInfo(+req.user.id)
+  }
 
-  // @Get()
-  // findAll() {
-  //   return this.sleepCyclesService.findAll();
-  // }
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('access-key')
+  @ApiBearerAuth("Bearer")
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch(':id')
+  update(@Param('id') id: string,@Request() req, @Body() updateSleepCycleDto: UpdateSleepCycleDto) {
+    updateSleepCycleDto["userId"]=req.user.id
+    return this.sleepCyclesService.update(+id, updateSleepCycleDto);
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.sleepCyclesService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateSleepCycleDto: UpdateSleepCycleDto) {
-  //   return this.sleepCyclesService.update(+id, updateSleepCycleDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.sleepCyclesService.remove(+id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('access-key')
+  @ApiBearerAuth("Bearer")
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.sleepCyclesService.remove(+id);
+  }
 
 }
