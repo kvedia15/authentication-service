@@ -1,4 +1,4 @@
 export interface PrimaryAdapter {
-    run() : void;
-    stop() : void;
+  run(): void;
+  stop(): void;
 }

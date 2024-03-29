@@ -1,10 +1,17 @@
 export default class User {
-    id: number;
-    name: string;
-    password: string;
-    constructor(id: number, name: string, password: string) {
-        this.id = id;
-        this.name = name;
-        this.password = password;
-    }
+  id: number;
+  username: string;
+  password: string;
+  constructor(id: number, username: string, password: string) {
+    this.id = id;
+    this.username = username;
+    this.password = password;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      username: this.username,
+    };
+  }
 }
