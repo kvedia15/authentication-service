@@ -1,4 +1,5 @@
 import { Application } from "./app";
-
-const app = new Application();
+import { loadSettings } from "./settings";
+const settings = loadSettings("settings.yaml");
+const app = new Application(settings);
 app.run();

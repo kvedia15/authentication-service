@@ -1,7 +1,7 @@
-import User from "../domain/user";
-import { IUserRepo } from "../ports/secondary";
+import { IUserRepo } from "../../core/ports/secondary";
 import { IRegisterUser } from "../ports/usecases";
 import bcrypt from "bcrypt";
+import User from "../../../src/core/domain/user";
 
 export class RegisterUser implements IRegisterUser {
   private userRepo: IUserRepo;
@@ -11,9 +11,15 @@ export class RegisterUser implements IRegisterUser {
   public async run(
     username: string,
     password: string,
-  ): Promise<User | undefined> {
+    email: string,
+  ): Promise<User | null> {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
-    return this.userRepo.addUser(username, passwordHash);
+    const registeredUser = await this.userRepo.createUser(
+      username,
+      passwordHash,
+      email,
+    );
+    return registeredUser;
   }
 }

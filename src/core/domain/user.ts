@@ -1,17 +1,43 @@
 export default class User {
-  id: number;
-  username: string;
-  password: string;
-  constructor(id: number, username: string, password: string) {
+  private id: number;
+  private username: string;
+  private password: string;
+  private email: string;
+  private sessionToken: string | null;
+  constructor(id: number, username: string, password: string, email: string) {
     this.id = id;
     this.username = username;
     this.password = password;
+    this.email = email;
+    this.sessionToken = null;
   }
 
-  toJSON() {
+  public toJSON(): any {
     return {
       id: this.id,
       username: this.username,
+      email: this.email,
+      sessionToken: this.sessionToken,
     };
+  }
+
+  public get Id(): number {
+    return this.id;
+  }
+
+  public get Password(): string {
+    return this.password;
+  }
+
+  public get Username(): string {
+    return this.username;
+  }
+
+  public get SessionToken(): string | null {
+    return this.sessionToken;
+  }
+
+  public set SessionToken(sessionToken: string | null) {
+    this.sessionToken = sessionToken;
   }
 }
