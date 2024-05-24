@@ -38,4 +38,10 @@ describe("AuthenticateUser", () => {
 
     expect(user).toBe(null);
   });
+
+  it("fails to authenticate a user with incorrect jwt", async () => {
+    authenticateUser = new AuthenticateUser(userRepo, "undefined");
+    const user = await authenticateUser.run("existingUser", "password123");
+    expect(user).toBe(null);
+  });
 });

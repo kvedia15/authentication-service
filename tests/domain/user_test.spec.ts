@@ -30,4 +30,12 @@ describe("User", () => {
       });
     });
   });
+
+  describe("SessionToken", () => {
+    it("sets the session token correctly", () => {
+      const sessionToken = "testToken";
+      user.SessionToken = sessionToken;
+      expect(user.SessionToken).toBe(sessionToken);
+    });
+  });
 });

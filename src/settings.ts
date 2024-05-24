@@ -12,7 +12,7 @@ class PsqlConfig {
 }
 
 export class Settings {
-  jwtToken: string = "";
+  jwtToken: string = "undefined";
   psql: PsqlConfig = new PsqlConfig();
 }
 

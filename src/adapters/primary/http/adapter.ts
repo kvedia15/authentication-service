@@ -1,20 +1,32 @@
 import express, { Express } from "express";
 import { PrimaryAdapter } from "../../../core/ports/primary";
 import { Server } from "./app_server";
-import { IAuthenticateUser, IRegisterUser } from "../../../core/ports/usecases";
+import {
+  IAuthenticateUser,
+  ICreateTable,
+  IGetTable,
+  IRegisterUser,
+  IValidateToken,
+} from "../../../core/ports/usecases";
 export class HttpAdapter implements PrimaryAdapter {
   app: Express;
   private port: number;
-  registerUserUsecase: IRegisterUser;
-  authenticateUserUsecase: IAuthenticateUser;
+
   public constructor(
     port: number,
     registerUserUsecase: IRegisterUser,
     authenticateUserUsecase: IAuthenticateUser,
+    validateTokenUsecase: IValidateToken,
+    createTableUsecase: ICreateTable,
+    getTableUsecase: IGetTable,
   ) {
-    this.registerUserUsecase = registerUserUsecase;
-    this.authenticateUserUsecase = authenticateUserUsecase;
-    let server = new Server(registerUserUsecase, authenticateUserUsecase);
+    let server = new Server(
+      registerUserUsecase,
+      authenticateUserUsecase,
+      validateTokenUsecase,
+      createTableUsecase,
+      getTableUsecase,
+    );
     this.app = server.app;
     this.port = port;
   }

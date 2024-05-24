@@ -1,10 +1,15 @@
 export default class User {
   private id: number;
   private username: string;
-  private password: string;
-  private email: string;
+  private password: string | null;
+  private email: string | null;
   private sessionToken: string | null;
-  constructor(id: number, username: string, password: string, email: string) {
+  constructor(
+    id: number,
+    username: string,
+    password: string | null = null,
+    email: string | null = null,
+  ) {
     this.id = id;
     this.username = username;
     this.password = password;
@@ -25,7 +30,7 @@ export default class User {
     return this.id;
   }
 
-  public get Password(): string {
+  public get Password(): string | null {
     return this.password;
   }
 
@@ -37,7 +42,7 @@ export default class User {
     return this.sessionToken;
   }
 
-  public set SessionToken(sessionToken: string | null) {
+  public set SessionToken(sessionToken: string) {
     this.sessionToken = sessionToken;
   }
 }

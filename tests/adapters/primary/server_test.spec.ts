@@ -1,20 +1,38 @@
 import request from "supertest";
 import { Server } from "../../../src/adapters/primary/http/app_server"; // Adjust the path as necessary
 import { InMemUserRepo } from "../../../src/adapters/secondary/user_repo/inmem";
+import { InMemTableRepo } from "../../../src/adapters/secondary/table_repo/inmem";
 import { RegisterUser } from "../../../src/core/usecases/registerUser";
 import { AuthenticateUser } from "../../../src/core/usecases/authenticateUser"; // Adjust the path as necessary
+import { ValidateToken } from "../../../src/core/usecases/validateToken";
+import { CreateTable } from "../../../src/core/usecases/createTable";
+import { GetTable } from "../../../src/core/usecases/getTable";
 
 describe("Server - Integration Test with InMemUserRepo", () => {
   let server: Server;
   let inMemUserRepo: InMemUserRepo;
+  let inMemTableRepo: InMemTableRepo;
   let registerUser: RegisterUser;
   let authenticateUser: AuthenticateUser;
+  let validateToken: ValidateToken;
+  let createTable: CreateTable;
+  let getTable: GetTable;
 
   beforeAll(() => {
     inMemUserRepo = new InMemUserRepo();
+    inMemTableRepo = new InMemTableRepo();
     registerUser = new RegisterUser(inMemUserRepo);
     authenticateUser = new AuthenticateUser(inMemUserRepo, "testToken");
-    server = new Server(registerUser, authenticateUser);
+    validateToken = new ValidateToken("testToken");
+    createTable = new CreateTable(inMemTableRepo);
+    getTable = new GetTable(inMemTableRepo);
+    server = new Server(
+      registerUser,
+      authenticateUser,
+      validateToken,
+      createTable,
+      getTable,
+    );
   });
 
   it("/users - should register a user successfully", async () => {

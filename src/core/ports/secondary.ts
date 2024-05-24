@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import Player from "../domain/player";
 import Table from "../domain/table";
 import User from "../domain/user";
@@ -12,7 +13,8 @@ export interface IUserRepo {
 }
 
 export interface ITableRepo {
-  createTable(): Promise<Table | null>;
+  createTable(table: Table): Promise<Table | null>;
+  getTable(tableId: UUID): Promise<Table | null>;
 }
 
 export interface IPlayerRepo {
