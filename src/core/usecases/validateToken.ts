@@ -27,19 +27,17 @@ export class ValidateToken {
     return new Promise((resolve, reject) => {
       jwt.verify(token, this.jwt_token, (err, decoded) => {
         if (err) {
-          return reject(err);
+          return resolve(null);
         }
         if (typeof decoded === "string") {
           return resolve(null);
         }
         if (typeof decoded === "object" && decoded) {
-          monitor.info(decoded.userId);
           return resolve({
             userId: decoded.userId,
             username: decoded.username,
           });
         }
-        resolve(null);
       });
     });
   }

@@ -44,4 +44,12 @@ describe("AuthenticateUser", () => {
     const user = await authenticateUser.run("existingUser", "password123");
     expect(user).toBe(null);
   });
+
+  it("fails to authenticate a user with no password hash", async () => {
+    await userRepo.createUser("userWithoutPasswordHash", "", "test2@me.com");
+
+    const user = await authenticateUser.run("userWithoutPasswordHash", "password123");
+
+    expect(user).toBe(null);
+  });
 });

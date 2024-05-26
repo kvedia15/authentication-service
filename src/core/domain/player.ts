@@ -1,50 +1,38 @@
-import { randomUUID } from "crypto";
+import { UUID, randomUUID } from "crypto";
 
-enum PlayerPosition {
-  Dealer = "Dealer",
-  SmallBlind = "SmallBlind",
-  BigBlind = "BigBlind",
-  Normal = "Normal",
-}
 
-enum PlayerStatus {
-  Active = "Active",
-  Folded = "Folded",
-  Out = "Out",
-}
 
 export default class Player {
-  private userID: number | null;
-  private tableID: string;
   private chipCount: number;
-  private position: PlayerPosition;
-  private status: PlayerStatus;
   private name: string;
+  private playerId: UUID
 
   constructor(
-    userID: number | null,
-    tableID: string,
     chipCount: number,
-    position: PlayerPosition,
-    status: PlayerStatus,
-    name: string,
+    name?: string,
   ) {
-    this.userID = userID;
-    this.tableID = tableID;
     this.chipCount = chipCount;
-    this.position = position;
-    this.status = status;
     this.name = name || "Guest-" + randomUUID().toString();
+    this.playerId = randomUUID();
   }
 
   toJson(): any {
     return {
-      userID: this.userID,
-      tableID: this.tableID,
       chipCount: this.chipCount,
-      position: this.position,
-      status: this.status,
       name: this.name,
+      playerId: this.playerId
     };
+  }
+
+  public get Name(): string | null {
+    return this.name
+  }
+
+  public get ChipCount(): number {
+    return this.chipCount
+  }
+
+  public get Id(): UUID {
+    return this.playerId
   }
 }

@@ -5,6 +5,7 @@ import {
   IAuthenticateUser,
   ICreateTable,
   IGetTable,
+  IJoinTable,
   IRegisterUser,
   IValidateToken,
 } from "../../../core/ports/usecases";
@@ -19,6 +20,7 @@ export class HttpAdapter implements PrimaryAdapter {
     validateTokenUsecase: IValidateToken,
     createTableUsecase: ICreateTable,
     getTableUsecase: IGetTable,
+    joinTableUsecase: IJoinTable
   ) {
     let server = new Server(
       registerUserUsecase,
@@ -26,6 +28,7 @@ export class HttpAdapter implements PrimaryAdapter {
       validateTokenUsecase,
       createTableUsecase,
       getTableUsecase,
+      joinTableUsecase
     );
     this.app = server.app;
     this.port = port;

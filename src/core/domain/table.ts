@@ -1,4 +1,4 @@
-import Player from "./player";
+import Player from './player';
 import User from "./user";
 import { UUID, randomUUID } from "crypto";
 
@@ -9,7 +9,8 @@ export default class Table {
   private turnNumber: number;
   private tableOrganizer: User;
   private tableId: UUID;
-
+  private players: Player[];
+  
   constructor(
     startTime: Date,
     endTime: Date | null,
@@ -23,6 +24,19 @@ export default class Table {
     this.turnNumber = turnNumber;
     this.tableOrganizer = tableOrganizer;
     this.tableId = randomUUID();
+    this.players = []
+   
+  }
+
+  public addPlayer(player: Player): void {
+    this.players.push(player);
+  }
+
+  public removePlayer(playerId: UUID): void {
+    const index = this.players.findIndex(player => player.Id === playerId);
+    if (index !== -1) {
+      this.players.splice(index, 1);
+    }
   }
 
   public toJSON(): any {
@@ -33,9 +47,15 @@ export default class Table {
       turnNumber: this.turnNumber,
       tableOrganizer: this.tableOrganizer.toJSON(),
       tableId: this.tableId.toString(),
+      players: this.players
     };
   }
   public get TableId(): UUID {
     return this.tableId;
   }
+
+  public get Players(): Player[] {
+    return this.players
+  }
+
 }

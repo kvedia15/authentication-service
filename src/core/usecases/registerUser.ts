@@ -14,6 +14,9 @@ export class RegisterUser implements IRegisterUser {
     email: string,
   ): Promise<User | null> {
     const saltRounds = 10;
+    if (password === ""){
+      return null
+    }
     const passwordHash = await bcrypt.hash(password, saltRounds);
     const registeredUser = await this.userRepo.createUser(
       username,

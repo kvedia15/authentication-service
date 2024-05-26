@@ -15,8 +15,10 @@ export interface IUserRepo {
 export interface ITableRepo {
   createTable(table: Table): Promise<Table | null>;
   getTable(tableId: UUID): Promise<Table | null>;
+  // joinTable(tableId: UUID, player: Player ): Promise<Table | null>;
 }
 
 export interface IPlayerRepo {
-  createPlayer(): Promise<Player | null>;
+  createPlayer(player: Player): Promise<Player | null>;
+  removePlayer(playerId: UUID): Promise<Player | null>;
 }

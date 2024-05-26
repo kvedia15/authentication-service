@@ -13,7 +13,7 @@ export interface IAuthenticateUser {
 }
 
 export interface ICreateTable {
-  run(user: User): Promise<Table | null>;
+  run(user: User, userBuyIn: number): Promise<Table>;
 }
 
 export interface IGetTable {
@@ -22,4 +22,12 @@ export interface IGetTable {
 
 export interface IValidateToken {
   run(token: string): Promise<User | null>;
+}
+
+export interface IJoinTable {
+  run(tableId: UUID, user: User | null, buyIn: number): Promise<Table | null>;
+}
+
+export interface ILeaveTable {
+  run(tableId: UUID, playerId: UUID): Promise<boolean>;
 }
