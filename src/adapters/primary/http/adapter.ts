@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import { PrimaryAdapter } from "../../../core/ports/primary";
 import { Server } from "./app_server";
+import { IAddTransaction, ILeaveTable } from '../../../core/ports/usecases';
 import {
   IAuthenticateUser,
   ICreateTable,
@@ -20,7 +21,9 @@ export class HttpAdapter implements PrimaryAdapter {
     validateTokenUsecase: IValidateToken,
     createTableUsecase: ICreateTable,
     getTableUsecase: IGetTable,
-    joinTableUsecase: IJoinTable
+    joinTableUsecase: IJoinTable,
+    leaveTableUsecase: ILeaveTable,
+    addTransactionUsecase: IAddTransaction
   ) {
     let server = new Server(
       registerUserUsecase,
@@ -28,7 +31,9 @@ export class HttpAdapter implements PrimaryAdapter {
       validateTokenUsecase,
       createTableUsecase,
       getTableUsecase,
-      joinTableUsecase
+      joinTableUsecase,
+      leaveTableUsecase,
+      addTransactionUsecase
     );
     this.app = server.app;
     this.port = port;

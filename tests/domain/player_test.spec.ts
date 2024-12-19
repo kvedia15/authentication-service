@@ -1,5 +1,5 @@
 import Player from "../../src/core/domain/player";
-
+import { randomUUID } from 'crypto';
 describe("Player", () => {
   let player: Player;
   let chipCount: number;
@@ -8,7 +8,7 @@ describe("Player", () => {
   beforeEach(() => {
     chipCount = 1000;
     name = "testPlayer";
-    player = new Player(chipCount, name);
+    player = new Player(chipCount,randomUUID(), name);
   });
 
   it("initializes correctly", () => {
@@ -18,7 +18,7 @@ describe("Player", () => {
   });
 
   it("initializes with default name if not provided", () => {
-    player = new Player(chipCount, "");
+    player = new Player(chipCount, randomUUID() );
     expect(player).toBeDefined();
     expect(player["chipCount"]).toBe(chipCount);
     expect(player["name"]).toMatch(/^Guest-/); // Check if name starts with "Guest-"

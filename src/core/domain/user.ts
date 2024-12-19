@@ -42,6 +42,10 @@ export default class User {
     return this.sessionToken;
   }
 
+  public get Email(): string | null {
+    return this.email;
+  }
+
   public set SessionToken(sessionToken: string) {
     this.sessionToken = sessionToken;
   }

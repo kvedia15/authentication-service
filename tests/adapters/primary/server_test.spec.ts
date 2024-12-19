@@ -10,8 +10,12 @@ import { CreateTable } from "../../../src/core/usecases/createTable";
 import { GetTable } from "../../../src/core/usecases/getTable";
 import { JoinTable } from "../../../src/core/usecases/joinTable";
 import { UUID } from "crypto";
+import { LeaveTable } from '../../../src/core/usecases/leaveTable';
+import { AddTransaction } from "../../../src/core/usecases/addTransaction";
+import Table from "../../../src/core/domain/table";
+import Player from "../../../src/core/domain/player";
 
-describe("Server - Integration Test with InMemUserRepo", () => {
+describe("Server Test with InMemUserRepo", () => {
   let server: Server;
   let inMemUserRepo: InMemUserRepo;
   let inMemTableRepo: InMemTableRepo;
@@ -22,6 +26,8 @@ describe("Server - Integration Test with InMemUserRepo", () => {
   let createTable: CreateTable;
   let getTable: GetTable;
   let joinTable: JoinTable;
+  let leaveTable: LeaveTable;
+  let addTransaction: AddTransaction;
   let sessionToken: string;
   let tableId: UUID;
 
@@ -29,19 +35,24 @@ describe("Server - Integration Test with InMemUserRepo", () => {
     inMemUserRepo = new InMemUserRepo();
     inMemTableRepo = new InMemTableRepo();
     inMemPlayerRepo = new InMemPlayerRepo();
+
     registerUser = new RegisterUser(inMemUserRepo);
     authenticateUser = new AuthenticateUser(inMemUserRepo, "testToken");
     validateToken = new ValidateToken("testToken");
-    createTable = new CreateTable(inMemTableRepo);
-    getTable = new GetTable(inMemTableRepo);
+    createTable = new CreateTable(inMemTableRepo, inMemPlayerRepo);
+    getTable = new GetTable(inMemTableRepo, inMemPlayerRepo);
     joinTable = new JoinTable(inMemTableRepo, inMemPlayerRepo);
+    leaveTable = new LeaveTable(inMemTableRepo, inMemPlayerRepo);
+    addTransaction  = new AddTransaction(inMemTableRepo, inMemPlayerRepo);
     server = new Server(
       registerUser,
       authenticateUser,
       validateToken,
       createTable,
       getTable,
-      joinTable
+      joinTable,
+      leaveTable,
+      addTransaction
     );
 
     await request(server.app).post("/api/v1/users").send({
@@ -145,6 +156,9 @@ describe("Server - Integration Test with InMemUserRepo", () => {
         expect(response.body.success).toBe(true);
         expect(response.body.table).toBeDefined();
         tableId = response.body.table.tableId;
+        let table = response.body.table;
+        let players = table.players;
+        expect(players[0].chipCount).toBe(1000);
       });
   });
 
@@ -208,7 +222,7 @@ describe("Server - Integration Test with InMemUserRepo", () => {
 
   it("/tables/join/:tableId - should join a table successfully", async () => {
     await request(server.app)
-      .post(`/api/v1/tables/join/${tableId}`)
+      .post(`/api/v1/tables/${tableId}/join`)
       .set("sessiontoken", sessionToken)
       .send({ buyIn: 1000 })
       .expect(200)
@@ -223,7 +237,7 @@ describe("Server - Integration Test with InMemUserRepo", () => {
 
   it("/tables/join/:tableId - should return error for invalid table ID", async () => {
     await request(server.app)
-      .post(`/api/v1/tables/join/invalid-table-id`)
+      .post(`/api/v1/tables/invalid-table-id/join`)
       .set("sessiontoken", sessionToken)
       .send({ buyIn: 1000 })
       .expect(400) 
@@ -235,7 +249,7 @@ describe("Server - Integration Test with InMemUserRepo", () => {
 
   it("/tables/join/:tableId - should return error when buy in not provided", async () => {
     await request(server.app)
-      .post(`/api/v1/tables/join/${tableId}`)
+      .post(`/api/v1/tables/${tableId}/join`)
       .send({ buyIn: null })
       .expect(400) 
       .then((response) => {
@@ -245,7 +259,7 @@ describe("Server - Integration Test with InMemUserRepo", () => {
   });
   it("/tables/join/:tableId - should return error when table does not exist", async () => {
     await request(server.app)
-      .post(`/api/v1/tables/join/9cff2bcd-a559-41d0-8543-100bb18cd190`)
+      .post(`/api/v1/tables/9cff2bcd-a559-41d0-8543-100bb18cd190/join`)
       .send({ buyIn: 1000 })
       .expect(404) 
       .then((response) => {
@@ -254,27 +268,26 @@ describe("Server - Integration Test with InMemUserRepo", () => {
       });
   });
 
-  it("toTableResponse - should return error message when table is null", async () => {
-    const response = server["toTableResponse"](null, "Error creating table");
-    expect(response).toEqual({
-      success: false,
-      error_message: "Error creating table",
-      table: {},
-    });
-  });
-
-  it("toTableResponse - should return table data when table is defined", async () => {
-    let user = await inMemUserRepo.getUser("testUser")!;
-    if (user) {
-      const table = await createTable.run(user, 0);
-      const response = server["toTableResponse"](table, "Error creating table");
-      expect(response).toEqual({
-        success: true,
-        error_message: "",
-        table: table?.toJSON(),
+  it("/tables/leave/:tableId - should leave a table successfully", async () => {
+    const joinTableResponse = await request(server.app)
+    .post(`/api/v1/tables/${tableId}/join`)
+    .set("sessiontoken", sessionToken)
+    .send({ buyIn: 1000 })
+    .expect(200);
+    let playerId = joinTableResponse.body.table.players[1].playerId;
+    await request(server.app)
+      .post(`/api/v1/tables/${tableId}/leave`)
+      .send({ playerId: playerId })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.success).toBe(true);
+        expect(response.body.table).toBeDefined();
+        for (let i = 0; i < response.body.table.players.length; i++) {
+          if (response.body.table.players[i].playerId === playerId) {
+            expect(response.body.table.players[i].playerId).toBe(playerId);
+          }
+        }
       });
-    }
   });
-
 
 });

@@ -2,12 +2,12 @@ import fs from "fs";
 import yaml from "js-yaml";
 import { plainToClass } from "class-transformer";
 class PsqlConfig {
-  enabled: boolean = false;
+  enabled: boolean = true;
   host: string = "localhost";
   port: number = 5432;
-  database: string = "virtual_chips";
+  database: string = "db";
   user: string = "postgres";
-  password: string = "postgres";
+  password: string = "password";
   sslmode: string = "disable";
 }
 

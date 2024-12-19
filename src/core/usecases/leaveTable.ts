@@ -1,8 +1,6 @@
 import { ITableRepo, IPlayerRepo } from '../ports/secondary';
 import { ILeaveTable } from "../ports/usecases";
 import Table from "../domain/table";
-import User from "../domain/user";
-import Player from "../domain/player"
 import { UUID } from "crypto";
 
 export class LeaveTable implements ILeaveTable {
@@ -12,13 +10,18 @@ export class LeaveTable implements ILeaveTable {
     this.tableRepo = tableRepo;
     this.playerRepo = playerRepo;
   }
-  public async run(tableId: UUID, playerId: UUID): Promise<boolean> {
+  public async run(tableId: UUID, playerId: UUID): Promise<Table | null> {
     let table = await this.tableRepo.getTable(tableId)
+
     if (table) {
+        let existingPlayers = await this.playerRepo.getPlayers(tableId);
+        for (const player of existingPlayers) {
+          table.addPlayer(player);
+        }
         table.removePlayer(playerId)
         this.playerRepo.removePlayer(playerId)
+        return table
     }
-    
-    return true
+    return null
   }
 } 

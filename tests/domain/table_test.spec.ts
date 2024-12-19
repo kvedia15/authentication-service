@@ -20,7 +20,7 @@ describe("Table", () => {
     expect(table["startTime"]).toBe(startTime);
     expect(table["endTime"]).toBe(endTime);
     expect(table["currentPot"]).toBe(100);
-    expect(table["turnNumber"]).toBe(1);
+    expect(table["roundNumber"]).toBe(1);
     expect(table["tableOrganizer"]).toBe(user);
     expect(typeof table["tableId"]).toBe("string");
   });
@@ -38,7 +38,7 @@ describe("Table", () => {
     expect(json.startTime).toBe(startTime.toISOString());
     expect(json.endTime).toBe(endTime?.toISOString());
     expect(json.currentPot).toBe(100);
-    expect(json.turnNumber).toBe(1);
+    expect(json.roundNumber).toBe(1);
     expect(json.tableOrganizer).toEqual(user.toJSON());
     expect(typeof json.tableId).toBe("string");
   });
@@ -50,7 +50,7 @@ describe("Table", () => {
     expect(json.startTime).toBe(startTime.toISOString());
     expect(json.endTime).toBeNull();
     expect(json.currentPot).toBe(100);
-    expect(json.turnNumber).toBe(1);
+    expect(json.roundNumber).toBe(1);
     expect(json.tableOrganizer).toEqual(user.toJSON());
     expect(typeof json.tableId).toBe("string");
   });

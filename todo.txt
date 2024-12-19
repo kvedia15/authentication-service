@@ -1,8 +1,6 @@
-add a /tables post endpoint to create tables
-create table domain
-create player domain
-when table created , user that created is first player added
-then a table id is given and provided which is used by registered users to enter specific tables
+add a /tables/leave/:tableId - players themselves or table organizer can do this
 
-add a /tables/{table-id}/join GET to create players
-add a /tables/contributions POST create contributions
+add a /players/:id/add-chips - all players
+
+add a /players/:id/get-chips - all players
+

@@ -16,7 +16,7 @@ export class AuthenticateUser implements IAuthenticateUser {
   public async run(username: string, password: string): Promise<User | null> {
     const userFound = await this.userRepo.getUser(username);
     if (!userFound) {
-      logger.info("User not found");
+      monitor.info("User not found");
       return null;
     }
     const passwordHash = userFound.Password;
@@ -29,7 +29,7 @@ export class AuthenticateUser implements IAuthenticateUser {
     }
     monitor.info(this.jwt_token);
     if (this.jwt_token === "undefined") {
-      logger.error("JWT_SECRET is not defined in settings.yaml");
+      monitor.error("JWT_SECRET is not defined in settings.yaml");
       return null;
     }
 
