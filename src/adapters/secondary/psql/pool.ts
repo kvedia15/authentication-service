@@ -21,6 +21,7 @@ export class AsyncPool {
     return client;
   }
 
+
   async exec<T>(stm: Statement, then: (result: QueryResult) => T): Promise<T> {
     const client = await this.asyncSession();
     try {

@@ -12,6 +12,12 @@ export interface IAuthenticateUser {
   run(username: string, password: string): Promise<User | null>;
 }
 
+export interface ILogoutUser {
+  //provide name and password , if authentication is successful return the user object else return null
+  run(username: string): Promise<User | null>;
+}
+
+
 export interface ICreateTable {
   run(user: User, userBuyIn: number): Promise<Table | null>;
 }

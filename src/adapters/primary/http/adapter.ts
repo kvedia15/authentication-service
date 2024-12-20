@@ -19,21 +19,11 @@ export class HttpAdapter implements PrimaryAdapter {
     registerUserUsecase: IRegisterUser,
     authenticateUserUsecase: IAuthenticateUser,
     validateTokenUsecase: IValidateToken,
-    createTableUsecase: ICreateTable,
-    getTableUsecase: IGetTable,
-    joinTableUsecase: IJoinTable,
-    leaveTableUsecase: ILeaveTable,
-    addTransactionUsecase: IAddTransaction
   ) {
     let server = new Server(
       registerUserUsecase,
       authenticateUserUsecase,
       validateTokenUsecase,
-      createTableUsecase,
-      getTableUsecase,
-      joinTableUsecase,
-      leaveTableUsecase,
-      addTransactionUsecase
     );
     this.app = server.app;
     this.port = port;

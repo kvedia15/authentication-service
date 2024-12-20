@@ -1,4 +1,3 @@
-import Table from "../../../core/domain/table";
 import User from "../../../core/domain/user";
 import {
   validate as uuidValidate,
@@ -22,21 +21,7 @@ export function toUserResponse(user: User | null, errorMessage: string) {
   }
 
 
-  export function toTableResponse(table: Table | null, errorMessage: string) {
-    if (!table) {
-      return {
-        success: false,
-        errorMessage: errorMessage,
-        table: {},
-      };
-    }
-    return {
-      success: true,
-      errorMessage: "",
-      table: table.toJSON(),
-    };
-  }
-
+  
   export function toUUID(uuidString: string): UUID | null {
     if (!uuidValidate(uuidString)) {
       monitor.error(`Invalid UUID string: ${uuidString}`);

@@ -2,7 +2,7 @@ import fs from "fs";
 import yaml from "js-yaml";
 import { plainToClass } from "class-transformer";
 class PsqlConfig {
-  enabled: boolean = true;
+  enabled: boolean = false;
   host: string = "localhost";
   port: number = 5432;
   database: string = "db";
@@ -13,6 +13,8 @@ class PsqlConfig {
 
 export class Settings {
   jwtToken: string = "undefined";
+  jwtRefreshSecret: string = "undefined";
+  jwtSessionSecret: string = "undefined";
   psql: PsqlConfig = new PsqlConfig();
 }
 

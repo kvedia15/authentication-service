@@ -2,6 +2,8 @@ import { Router } from "express";
 import { IValidateToken, IRegisterUser, IAuthenticateUser } from '../../../../core/ports/usecases';
 import { toUserResponse } from "../serialiser";
 import monitor from "../../../../monitor";
+import User from "../../../../core/domain/user";
+import { IncomingHttpHeaders } from "http";
 
 const userRouter = Router();
 
@@ -50,6 +52,5 @@ export class UserRoutes {
     });
   
   }
-
 }
 export default userRouter;

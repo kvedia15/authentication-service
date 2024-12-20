@@ -36,7 +36,7 @@ export class AuthenticateUser implements IAuthenticateUser {
     const token = jwt.sign(
       { userId: userFound.Id, username: userFound.Username },
       this.jwt_token,
-      { expiresIn: "1h" },
+      { expiresIn: "10m" },
     );
 
     userFound.SessionToken = token;
