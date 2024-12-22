@@ -1,6 +1,5 @@
-add a /tables/leave/:tableId - players themselves or table organizer can do this
+CRUD for roles - repo done, usecases left
+migrate USER to use uuid as id
+set up startup logic correctly - setting owner up properly 
 
-add a /players/:id/add-chips - all players
-
-add a /players/:id/get-chips - all players
 

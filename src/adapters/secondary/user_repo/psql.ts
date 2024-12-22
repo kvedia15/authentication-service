@@ -1,7 +1,6 @@
 import {IUserRepo } from "../../../core/ports/secondary";
 import { AsyncPool } from "../psql/pool";
 import { SQLBootstrapper } from "../psql/sql_bootstrapper";
-import monitor from "../../../monitor";
 import User from "../../../core/domain/user";
 export class PsqlUserRepo implements IUserRepo {
   private pool: AsyncPool;
@@ -25,9 +24,9 @@ export class PsqlUserRepo implements IUserRepo {
           return null;
         }
         const user: User = new User(
-          item.id,
-          item.username,
-          item.email
+         { id: item.id,
+          username: item.username,
+          email: item.email}
         );
         return user;
       }
@@ -47,10 +46,11 @@ export class PsqlUserRepo implements IUserRepo {
           return undefined;
         }
         const user: User = new User(
-          item.id,
-          item.username,
-          item.password,
-          item.email
+         { id: item.id,
+          username: item.username,
+          password: item.password,
+          email: item.email,
+          role: item.role}
         );
         return user;
       }

@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import Role from "../domain/role";
 import User from "../domain/user";
 
 export interface IUserRepo {
@@ -11,8 +12,19 @@ export interface IUserRepo {
 }
 
 
-export interface IRefreshTokenRepo {
-  setRefreshToken(username: string, refreshToken: string): Promise<boolean>;
-  getRefreshToken(username: string): Promise<string | null>;
-  clearRefreshToken(username: string): Promise<boolean>;
+
+
+export interface ITokenRepo {
+  setToken(username: string, token?: string): Promise<string | null>;
+  getToken(username: string): Promise<string | null>;
+  clearToken(token: string): Promise<boolean>
+  getUserFromToken(token: string): Promise<User | null>;
+}
+
+export interface IRoleRepo {
+  getAllRoles(): Promise<Role[]>;
+  getRole(id: UUID): Promise<Role | null>;
+  createRole(role: Role): Promise<Role | null>;
+  updateRole(role: Role): Promise<Role | null>;
+  deleteRole(id: UUID): Promise<boolean>;
 }

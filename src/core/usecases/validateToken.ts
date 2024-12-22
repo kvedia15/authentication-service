@@ -3,17 +3,17 @@ import monitor from "../../monitor";
 import User from "../domain/user";
 
 export class ValidateToken {
-  private jwt_token: string;
+  private jwtSecret: string;
 
-  constructor(jwt_token: string) {
-    this.jwt_token = jwt_token;
+  constructor(jwtSecret: string) {
+    this.jwtSecret = jwtSecret;
   }
 
   public async run(token: string): Promise<User | null> {
     try {
       const user = await this.verifyToken(token);
       if (user) {
-        return new User(user.userId, user.username);
+        return new User({id: user.userId, username: user.username});
       }
       return null;
     } catch (err) {
@@ -25,7 +25,7 @@ export class ValidateToken {
     token: string,
   ): Promise<{ userId: number; username: string } | null> {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, this.jwt_token, (err, decoded) => {
+      jwt.verify(token, this.jwtSecret, (err, decoded) => {
         if (err) {
           return resolve(null);
         }

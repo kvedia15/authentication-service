@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Authentication Prototype</title>
+  </head>
+  <body>
+    <h1>User Authentication</h1>
+
+    <!-- Registration Form -->
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input
+        type="text"
+        id="registerUsername"
+        placeholder="Username"
+        required
+      />
+      <input
+        type="password"
+        id="registerPassword"
+        placeholder="Password"
+        required
+      />
+      <input type="email" id="registerEmail" placeholder="Email" required />
+      <button type="submit">Register</button>
+    </form>
+    <div id="registerResponse"></div>
+
+    <!-- Login Form -->
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="loginUsername" placeholder="Username" required />
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Password"
+        required
+      />
+      <button type="submit">Login</button>
+    </form>
+    <div id="loginResponse"></div>
+
+    <!-- Logout Button -->
+    <h2>Logout</h2>
+    <button id="logoutButton">Logout</button>
+    <div id="logoutResponse"></div>
+
+    <!-- Refresh Token -->
+    <h2>Refresh Token</h2>
+    <button id="refreshButton">Refresh Token</button>
+    <div id="refreshResponse"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+
+<script>
+  const baseUrl = "http://localhost:3000/api/v1/users"; // Update with your backend URL
+
+  // Register User
+  document
+    .getElementById("registerForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("registerUsername").value;
+      const password = document.getElementById("registerPassword").value;
+      const email = document.getElementById("registerEmail").value;
+
+      const response = await fetch(`${baseUrl}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, email }),
+      });
+
+      const data = await response.json();
+      document.getElementById("registerResponse").innerText = JSON.stringify(
+        data,
+        null,
+        2
+      );
+    });
+
+  // Login User
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("loginUsername").value;
+    const password = document.getElementById("loginPassword").value;
+
+    const response = await fetch(`${baseUrl}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+    document.getElementById("loginResponse").innerText = JSON.stringify(
+      data,
+      null,
+      2
+    );
+  });
+
+  // Logout User
+  document
+    .getElementById("logoutButton")
+    .addEventListener("click", async () => {
+      const response = await fetch(`${baseUrl}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      document.getElementById("logoutResponse").innerText = JSON.stringify(
+        data,
+        null,
+        2
+      );
+    });
+
+  // Refresh Token
+  document
+    .getElementById("refreshButton")
+    .addEventListener("click", async () => {
+      const response = await fetch(`${baseUrl}/refresh-token`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      document.getElementById("refreshResponse").innerText = JSON.stringify(
+        data,
+        null,
+        2
+      );
+    });
+</script>

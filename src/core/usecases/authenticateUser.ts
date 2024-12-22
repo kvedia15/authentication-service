@@ -1,17 +1,17 @@
 import User from "../domain/user";
-import { IUserRepo } from "../ports/secondary";
+import { ITokenRepo, IUserRepo } from "../ports/secondary";
 import { IAuthenticateUser } from "../ports/usecases";
 import bcrypt from "bcrypt";
-import logger from "../../monitor";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 import monitor from "../../monitor";
 export class AuthenticateUser implements IAuthenticateUser {
   private userRepo: IUserRepo;
-  private jwt_token: string;
-  constructor(userRepo: IUserRepo, jwt_token: string) {
+  private refreshTokenRepo: ITokenRepo;
+  private sessionTokenRepo: ITokenRepo;
+  constructor(userRepo: IUserRepo, refreshTokenRepo: ITokenRepo, sessionTokenRepo: ITokenRepo) {
     this.userRepo = userRepo;
-    this.jwt_token = jwt_token;
+    this.refreshTokenRepo = refreshTokenRepo;
+    this.sessionTokenRepo = sessionTokenRepo;
   }
   public async run(username: string, password: string): Promise<User | null> {
     const userFound = await this.userRepo.getUser(username);
@@ -27,19 +27,25 @@ export class AuthenticateUser implements IAuthenticateUser {
     if (!isMatch) {
       return null;
     }
-    monitor.info(this.jwt_token);
-    if (this.jwt_token === "undefined") {
-      monitor.error("JWT_SECRET is not defined in settings.yaml");
-      return null;
+
+    let sessionToken = await this.sessionTokenRepo.getToken(userFound.Username);
+    if (!sessionToken) {
+      sessionToken = await this.sessionTokenRepo.setToken(userFound.Username);
     }
 
-    const token = jwt.sign(
-      { userId: userFound.Id, username: userFound.Username },
-      this.jwt_token,
-      { expiresIn: "10m" },
-    );
 
-    userFound.SessionToken = token;
+    if (sessionToken !== null) {
+      userFound.SessionToken = sessionToken;
+    }
+
+    let refreshToken = await this.refreshTokenRepo.getToken(userFound.Username);
+    if (!refreshToken) {
+      refreshToken = await this.refreshTokenRepo.setToken(userFound.Username);
+    }
+    if (refreshToken !== null) {
+      userFound.RefreshToken = refreshToken;
+    }
+
     return userFound;
   }
 }

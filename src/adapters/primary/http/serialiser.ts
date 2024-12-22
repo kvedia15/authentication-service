@@ -1,31 +1,21 @@
 import User from "../../../core/domain/user";
-import {
-  validate as uuidValidate,
-} from "uuid";
-import { UUID } from "crypto";
-import monitor from "../../../monitor";
 
-export function toUserResponse(user: User | null, errorMessage: string) {
-    if (!user) {
-      return {
-        success: false,
-        error_message: errorMessage,
-        user: {},
-      };
-    }
-    return {
-      success: true,
-      errorMessage: "",
-      user: user.toJSON(),
-    };
-  }
+
+export function toUserResponse(user: User | null, message: string) {
+  return {
+    success: !!user,
+    user: user
+      ? {
+          id: user.Id,
+          username: user.Username,
+          email: user.Email,
+          sessionToken: user.SessionToken,
+          role: user.Role?.roleType,
+        }
+      : null,
+    message,
+  };
+}
 
 
   
-  export function toUUID(uuidString: string): UUID | null {
-    if (!uuidValidate(uuidString)) {
-      monitor.error(`Invalid UUID string: ${uuidString}`);
-      return null;
-    }
-    return uuidString as UUID;
-  }

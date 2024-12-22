@@ -10,6 +10,11 @@ import { AsyncPool } from "./adapters/secondary/psql/pool";
 import { Pool} from 'pg';
 import { SQLBootstrapper } from "./adapters/secondary/psql/sql_bootstrapper";
 import { PsqlUserRepo } from "./adapters/secondary/user_repo/psql";
+import { InMemTokenRepo, TokenRepoType } from "./adapters/secondary/psql/token_repo/inmem";
+import { LogoutUser } from "./core/usecases/logoutUser";
+import { RefreshToken } from "./core/usecases/refreshToken";
+import { InMemRoleRepo } from "./adapters/secondary/role_repo/inmem";
+import { StartupAdapter } from "./adapters/primary/startup/adapter";
 
 export class Application {
   private settings: Settings;
@@ -37,22 +42,41 @@ export class Application {
       const sqlBootstrapper = new SQLBootstrapper();
       userRepo = new PsqlUserRepo(asyncPool, sqlBootstrapper);
     }
+    const refreshTokenRepo = new InMemTokenRepo(
+      this.settings.jwtRefreshSecret,
+      "1h",
+      TokenRepoType.REFRESH
+    )
+    const sessionTokenRepo = new InMemTokenRepo(
+      this.settings.jwtSessionSecret,
+      "10m",
+      TokenRepoType.SESSION
+    )
 
+    const roleRepo = new InMemRoleRepo()
 
-    const registerUser = new RegisterUser(userRepo);
+    const registerUser = new RegisterUser(userRepo, roleRepo);
     const authenticateUser = new AuthenticateUser(
       userRepo,
-      this.settings.jwtSessionSecret,
+      refreshTokenRepo,
+      sessionTokenRepo
     );
     const validateToken = new ValidateToken(this.settings.jwtSessionSecret);
+    const logoutUser = new LogoutUser(userRepo, refreshTokenRepo, sessionTokenRepo);
+    const refreshToken = new RefreshToken(userRepo, refreshTokenRepo, sessionTokenRepo);
+
+
     const httpAdapter = new HttpAdapter(
       3000,
       registerUser,
       authenticateUser,
       validateToken,
+      logoutUser,
+      refreshToken
     );
+    const startUpAdapter = new StartupAdapter(registerUser);
     primaryAdapters.push(httpAdapter);
-
+    primaryAdapters.push(startUpAdapter);
     await Promise.all(primaryAdapters.map((adapter) => adapter.run()));
   }
 }

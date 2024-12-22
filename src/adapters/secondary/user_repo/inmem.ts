@@ -1,3 +1,4 @@
+import Role, { RoleType } from "../../../core/domain/role";
 import User from "../../../core/domain/user";
 import { IUserRepo } from "../../../core/ports/secondary";
 export class InMemUserRepo implements IUserRepo {
@@ -11,7 +12,7 @@ export class InMemUserRepo implements IUserRepo {
     password: string,
     email: string,
   ): Promise<User | null> {
-    const user = new User(++this.lastId, username, password, email);
+    const user = new User({id:++this.lastId, username:username, role: new Role({name:"user"}), password: password, email: email});
     this.users.push(user);
     return user;
   }
