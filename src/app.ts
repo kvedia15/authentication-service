@@ -10,14 +10,19 @@ import { AsyncPool } from "./adapters/secondary/psql/pool";
 import { Pool} from 'pg';
 import { SQLBootstrapper } from "./adapters/secondary/psql/sql_bootstrapper";
 import { PsqlUserRepo } from "./adapters/secondary/user_repo/psql";
-import { InMemTokenRepo, TokenRepoType } from "./adapters/secondary/psql/token_repo/inmem";
+import { InMemTokenRepo, TokenRepoType } from "./adapters/secondary/token_repo/inmem";
 import { LogoutUser } from "./core/usecases/logoutUser";
 import { RefreshToken } from "./core/usecases/refreshToken";
 import { InMemRoleRepo } from "./adapters/secondary/role_repo/inmem";
 import { StartupAdapter } from "./adapters/primary/startup/adapter";
+import { CreateRole } from "./core/usecases/roleUsecases/createRole";
+import { GetAllRoles } from "./core/usecases/roleUsecases/getAllRoles";
+import { GetRole } from "./core/usecases/roleUsecases/getRole";
+import { UpdateRole } from "./core/usecases/roleUsecases/updateRole";
 
 export class Application {
   private settings: Settings;
+  private userRepo?: IUserRepo;
 
   constructor(settings: Settings) {
     this.settings = settings;
@@ -25,8 +30,9 @@ export class Application {
 
   public async run(): Promise<void> {
     let primaryAdapters: PrimaryAdapter[] = [];
+
+    //repos
     let userRepo: IUserRepo = new InMemUserRepo();
-    
     if (this.settings.psql.enabled) {
       const pool = new Pool({
         host: 'localhost',
@@ -42,18 +48,21 @@ export class Application {
       const sqlBootstrapper = new SQLBootstrapper();
       userRepo = new PsqlUserRepo(asyncPool, sqlBootstrapper);
     }
+
+
     const refreshTokenRepo = new InMemTokenRepo(
       this.settings.jwtRefreshSecret,
-      "1h",
+      "1h", // TODO add to settings
       TokenRepoType.REFRESH
     )
     const sessionTokenRepo = new InMemTokenRepo(
       this.settings.jwtSessionSecret,
-      "10m",
+      "10m", //TODO add to settings
       TokenRepoType.SESSION
     )
-
     const roleRepo = new InMemRoleRepo()
+
+    //usecases
 
     const registerUser = new RegisterUser(userRepo, roleRepo);
     const authenticateUser = new AuthenticateUser(
@@ -64,17 +73,23 @@ export class Application {
     const validateToken = new ValidateToken(this.settings.jwtSessionSecret);
     const logoutUser = new LogoutUser(userRepo, refreshTokenRepo, sessionTokenRepo);
     const refreshToken = new RefreshToken(userRepo, refreshTokenRepo, sessionTokenRepo);
-
-
+    const createRole = new CreateRole(roleRepo);
+    const startUpAdapter = new StartupAdapter(registerUser, createRole, this.settings.ownerUser);
+    const getAllRoles = new GetAllRoles(roleRepo);
+    const getRole = new GetRole(roleRepo);
+    const updateRole = new UpdateRole(roleRepo);
     const httpAdapter = new HttpAdapter(
       3000,
       registerUser,
       authenticateUser,
       validateToken,
       logoutUser,
-      refreshToken
+      refreshToken,
+      createRole,
+      getAllRoles,
+      getRole,
+      updateRole
     );
-    const startUpAdapter = new StartupAdapter(registerUser);
     primaryAdapters.push(httpAdapter);
     primaryAdapters.push(startUpAdapter);
     await Promise.all(primaryAdapters.map((adapter) => adapter.run()));

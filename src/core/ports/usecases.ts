@@ -1,9 +1,10 @@
+import { UUID } from "crypto";
 import Role from "../domain/role";
 import User from "../domain/user";
 
 export interface IRegisterUser {
   //provide name and password , if registration is successful return the user object else return null
-  run(username: string, password: string, email: string): Promise<{ user: User | null; message: string }>;
+  run(username: string, password: string, email: string, role?: Role ): Promise<{ user: User | null; message: string }>;
 }
 
 export interface IAuthenticateUser {
@@ -25,13 +26,21 @@ export interface IRefreshToken {
 
 
 export interface IGetAllRoles {
-  run(): Promise<Role[]>;
+  run(limit: number, offset: number): Promise<Role[]>;
 }
 
 export interface IGetRole {
-  run(id: string): Promise<Role | null>;
+  run(id: UUID): Promise<Role | null>;
 }
 
 export interface ICreateRole {
   run(role: Role): Promise<Role | null>;
+}
+
+export interface IUpdateRole {
+  run(role: Role): Promise<Role | null>;
+}
+
+export interface IDeleteRole {
+  run(id: UUID): Promise<boolean>;
 }

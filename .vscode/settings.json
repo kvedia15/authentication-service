@@ -10,5 +10,8 @@
             "database": "db",
             "username": "postgres"
         }
+    ],
+    "cSpell.words": [
+        "serialiser"
     ]
 }

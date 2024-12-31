@@ -1,24 +1,14 @@
-import { randomUUID, UUID } from "crypto";
-import Role, { RoleType } from "../../../core/domain/role";
+import { UUID } from "crypto";
+import Role from "../../../core/domain/role";
 import { IRoleRepo } from "../../../core/ports/secondary";
 import monitor from "../../../monitor";
 
 export class InMemRoleRepo implements IRoleRepo {
     roles : Map<UUID, Role>
     constructor() {
-        let basicRoleId = randomUUID()
         this.roles = new Map(
-
         );
-
-        this.roles = new Map<UUID, Role>([
-            [
-              basicRoleId,
-              new Role({id: basicRoleId, name: "Basic User", isLeastPrivilege: true, roleType: RoleType.USER}),
-            ],
-        ])
     }
-
     public async getAllRoles(): Promise<Role[]> {
         return Array.from(this.roles.values());
     }
@@ -50,6 +40,15 @@ export class InMemRoleRepo implements IRoleRepo {
         } catch (e) {
             monitor.error("Error deleting role", e);
             return false;
+        }
+    }
+
+    public async getLeastPrivilegedRole(): Promise<Role | null> {
+        try {
+            return Array.from(this.roles.values()).find(role => role.isLeastPrivilege) || null;
+        } catch (e) {
+            monitor.error("Error getting least privileged role", e);
+            return null;
         }
     }
 }

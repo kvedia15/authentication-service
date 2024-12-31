@@ -2,6 +2,7 @@ import {IUserRepo } from "../../../core/ports/secondary";
 import { AsyncPool } from "../psql/pool";
 import { SQLBootstrapper } from "../psql/sql_bootstrapper";
 import User from "../../../core/domain/user";
+import Role from "../../../core/domain/role";
 export class PsqlUserRepo implements IUserRepo {
   private pool: AsyncPool;
   private queries: SQLBootstrapper;
@@ -14,7 +15,8 @@ export class PsqlUserRepo implements IUserRepo {
   public async createUser(
     username: string,
     password: string,
-    email: string
+    email: string,
+    role?: Role
   ): Promise<User | null> {
     const newUser = await this.pool.exec(
       this.queries.get("create_user", [username, password, email]),

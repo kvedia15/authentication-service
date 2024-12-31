@@ -3,7 +3,7 @@ import { IRegisterUser } from "../ports/usecases";
 import bcrypt from "bcrypt";
 import User from "../../../src/core/domain/user";
 import monitor from "../../monitor";
-import Role from "../domain/role";
+import Role from '../domain/role';
 
 export class RegisterUser implements IRegisterUser {
   private userRepo: IUserRepo;
@@ -16,6 +16,7 @@ export class RegisterUser implements IRegisterUser {
     username: string,
     password: string,
     email: string,
+    role?: Role
   ): Promise<{ user: User | null; message: string }> {
     const saltRounds = 10;
     if (password === "") {
@@ -32,18 +33,22 @@ export class RegisterUser implements IRegisterUser {
         username,
         passwordHash,
         email,
+        role
       );
       if (!registeredUser) {
         return { user: null, message: "An error occurred while registering the user" };
       }
       
-      let allRoles = await this.roleRepo.getAllRoles();
-      for (const role of allRoles) {
-        if (role.isLeastPrivilege) 
-          registeredUser.Role = role;
+      if (!role){
+        let leastPrivilegeRole = await this.roleRepo.getLeastPrivilegedRole();
+        if (!leastPrivilegeRole) {
+          monitor.error("Error getting least privileged role");
+          return { user: null, message: "An error occurred while getting the least privileged role" };
+        }
+        registeredUser.Role = leastPrivilegeRole ;
+      }else {
+        registeredUser.Role = role;
       }
-
-
       return { user: registeredUser, message: "" };
     } catch (error) {
       monitor.error("Error hashing password", error);

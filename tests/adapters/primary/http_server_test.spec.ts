@@ -6,7 +6,11 @@ import { AuthenticateUser } from "../../../src/core/usecases/authenticateUser";
 import { ValidateToken } from "../../../src/core/usecases/validateToken";
 import { LogoutUser } from "../../../src/core/usecases/logoutUser";
 import { RefreshToken } from "../../../src/core/usecases/refreshToken";
-import { InMemTokenRepo } from "../../../src/adapters/secondary/psql/token_repo/inmem";
+import { InMemTokenRepo } from "../../../src/adapters/secondary/token_repo/inmem";
+import { CreateRole } from "../../../src/core/usecases/roleUsecases/createRole";
+import { GetAllRoles } from "../../../src/core/usecases/roleUsecases/getAllRoles";
+import { GetRole } from "../../../src/core/usecases/roleUsecases/getRole";
+import { UpdateRole } from "../../../src/core/usecases/roleUsecases/updateRole";
 import { assert } from "console";
 import { InMemRoleRepo } from "../../../src/adapters/secondary/role_repo/inmem";
 describe("User Routes Test Suite", () => {
@@ -20,6 +24,10 @@ describe("User Routes Test Suite", () => {
   let validateToken: ValidateToken;
   let logoutUser: LogoutUser;
   let refreshToken: RefreshToken;
+  let createRole: CreateRole;
+  let getAllRoles: GetAllRoles;
+  let getRole: GetRole;
+  let updateRole: UpdateRole;
 
   beforeAll(async () => {
     inMemUserRepo = new InMemUserRepo();
@@ -27,16 +35,40 @@ describe("User Routes Test Suite", () => {
     refreshTokenRepo = new InMemTokenRepo("testRefreshSecret");
     inMemRoleRepo = new InMemRoleRepo();
     registerUser = new RegisterUser(inMemUserRepo, inMemRoleRepo);
-    authenticateUser = new AuthenticateUser(inMemUserRepo,refreshTokenRepo, sessionTokenRepo);
+    authenticateUser = new AuthenticateUser(
+      inMemUserRepo,
+      refreshTokenRepo,
+      sessionTokenRepo
+    );
     validateToken = new ValidateToken("testToken");
-    logoutUser = new LogoutUser(inMemUserRepo, refreshTokenRepo, sessionTokenRepo);
-    refreshToken = new RefreshToken(inMemUserRepo, refreshTokenRepo, sessionTokenRepo);
-
-    server = new Server(registerUser, authenticateUser, validateToken, logoutUser, refreshToken);
+    logoutUser = new LogoutUser(
+      inMemUserRepo,
+      refreshTokenRepo,
+      sessionTokenRepo
+    );
+    refreshToken = new RefreshToken(
+      inMemUserRepo,
+      refreshTokenRepo,
+      sessionTokenRepo
+    );
+    createRole = new CreateRole(inMemRoleRepo);
+    getAllRoles = new GetAllRoles(inMemRoleRepo);
+    getRole = new GetRole(inMemRoleRepo);
+    updateRole = new UpdateRole(inMemRoleRepo);
+    server = new Server(
+      registerUser,
+      authenticateUser,
+      validateToken,
+      logoutUser,
+      refreshToken,
+      createRole,
+      getAllRoles,
+      getRole,
+      updateRole
+    );
   });
 
-  afterAll(async () => {
-  });
+  afterAll(async () => {});
 
   it("/api/v1/users - should register a user successfully", async () => {
     await request(server.app)
@@ -68,13 +100,11 @@ describe("User Routes Test Suite", () => {
   });
 
   it("/api/v1/users/login - should authenticate a user successfully", async () => {
-    await request(server.app)
-      .post("/api/v1/users")
-      .send({
-        username: "newUser",
-        password: "password123",
-        email: "test@me.com",
-      }); 
+    await request(server.app).post("/api/v1/users").send({
+      username: "newUser",
+      password: "password123",
+      email: "test@me.com",
+    });
 
     let resp = await request(server.app)
       .post("/api/v1/users/login")
@@ -84,8 +114,6 @@ describe("User Routes Test Suite", () => {
         expect(response.body.success).toBe(true);
         expect(response.body.user.username).toBe("newUser");
       });
-
-    
   });
 
   it("/api/v1/users/login - should fail authentication with incorrect credentials", async () => {
@@ -99,26 +127,27 @@ describe("User Routes Test Suite", () => {
   });
 
   it("/api/v1/users/refresh-token - should refresh session successfully", async () => {
-
     await request(server.app)
-    .post("/api/v1/users")
-    .send({
-      username: "newUser2",
-      password: "password123",
-      email: "new@me.com",
-    })
-    .expect(201)
-    .then((response) => {
-      expect(response.body.success).toBe(true);
-      expect(response.body.user.username).toBe("newUser2");
-    });
+      .post("/api/v1/users")
+      .send({
+        username: "newUser2",
+        password: "password123",
+        email: "new@me.com",
+      })
+      .expect(201)
+      .then((response) => {
+        expect(response.body.success).toBe(true);
+        expect(response.body.user.username).toBe("newUser2");
+      });
 
     const loginResponse = await request(server.app)
       .post("/api/v1/users/login")
       .send({ username: "newUser2", password: "password123" });
 
-    const refreshToken = loginResponse.headers["set-cookie"][0].split(";")[0].split("=")[1];
-    
+    const refreshToken = loginResponse.headers["set-cookie"][0]
+      .split(";")[0]
+      .split("=")[1];
+
     await request(server.app)
       .post("/api/v1/users/refresh-token")
       .set("Cookie", `refreshToken=${refreshToken}`)
@@ -141,29 +170,31 @@ describe("User Routes Test Suite", () => {
 
   it("/api/v1/users/logout - should log out a user successfully", async () => {
     await request(server.app)
-    .post("/api/v1/users")
-    .send({
-      username: "newUser3",
-      password: "password123",
-      email: "new@me.com",
-    })
-    .expect(201)
-    .then((response) => {
-      expect(response.body.success).toBe(true);
-      expect(response.body.user.username).toBe("newUser3");
-    });
+      .post("/api/v1/users")
+      .send({
+        username: "newUser3",
+        password: "password123",
+        email: "new@me.com",
+      })
+      .expect(201)
+      .then((response) => {
+        expect(response.body.success).toBe(true);
+        expect(response.body.user.username).toBe("newUser3");
+      });
 
     const loginResponse = await request(server.app)
       .post("/api/v1/users/login")
       .send({ username: "newUser3", password: "password123" });
 
-    const refreshToken = loginResponse.headers["set-cookie"][0].split(";")[0].split("=")[1];
+    const refreshToken = loginResponse.headers["set-cookie"][0]
+      .split(";")[0]
+      .split("=")[1];
 
     await request(server.app)
       .post("/api/v1/users/logout")
       .set("Authorization", `Bearer ${loginResponse.body.user.sessionToken}`)
       .set("Cookie", `refreshToken=${refreshToken}`)
-    .expect(200)  
+      .expect(200)
       .then((response) => {
         expect(response.body.success).toBe(true);
       });
@@ -177,6 +208,4 @@ describe("User Routes Test Suite", () => {
         expect(response.body.message).toBe("Refresh token missing");
       });
   });
-
-
 });

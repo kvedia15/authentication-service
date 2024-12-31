@@ -1,6 +1,6 @@
 import { randomUUID, UUID } from "crypto";
 
-enum PermissionType {
+export enum PermissionType {
   USER_MANAGEMENT = "USER_MANAGEMENT",
   PERMISSION_MANAGEMENT = "PERMISSION_MANAGEMENT",
   READ = "READ",
@@ -55,6 +55,22 @@ export default class Role {
     this.permissions = permissions || [PermissionType.READ];
     this.createdAt = createdAt || new Date();
     this.updatedAt = updatedAt || new Date();
-    this.isLeastPrivilege = isLeastPrivilege || true;
+    this.isLeastPrivilege = isLeastPrivilege || false;
+  }
+
+  public get Id(): UUID {
+    return this.id;
+  }
+
+  public get Name(): string {
+    return this.name;
+  }
+
+  public get RoleType(): RoleType {
+    return this.roleType;
+  }
+
+  public get Permissions(): PermissionType[] {
+    return this.permissions;
   }
 }

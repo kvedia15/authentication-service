@@ -11,8 +11,9 @@ export class InMemUserRepo implements IUserRepo {
     username: string,
     password: string,
     email: string,
+    role?: Role
   ): Promise<User | null> {
-    const user = new User({id:++this.lastId, username:username, role: new Role({name:"user"}), password: password, email: email});
+    const user = new User({id:++this.lastId, username:username, role: role, password: password, email: email});
     this.users.push(user);
     return user;
   }

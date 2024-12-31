@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { ITokenRepo } from "../../../../core/ports/secondary";
-import monitor from "../../../../monitor";
-import User from "../../../../core/domain/user";
+import { ITokenRepo } from "../../../core/ports/secondary";
+import monitor from "../../../monitor";
+import User from "../../../core/domain/user";
 
 
 export enum TokenRepoType {

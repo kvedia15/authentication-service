@@ -2,7 +2,6 @@ import User from "../domain/user";
 import { ITokenRepo, IUserRepo } from "../ports/secondary";
 import { IAuthenticateUser } from "../ports/usecases";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import monitor from "../../monitor";
 export class AuthenticateUser implements IAuthenticateUser {
   private userRepo: IUserRepo;

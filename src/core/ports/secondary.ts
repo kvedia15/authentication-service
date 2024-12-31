@@ -7,6 +7,7 @@ export interface IUserRepo {
     username: string,
     password: string,
     email: string,
+    role?: Role
   ): Promise<User | null>;
   getUser(username: string): Promise<User | undefined>;
 }
@@ -22,9 +23,10 @@ export interface ITokenRepo {
 }
 
 export interface IRoleRepo {
-  getAllRoles(): Promise<Role[]>;
+  getAllRoles(limit: number, offset: number): Promise<Role[]>;
   getRole(id: UUID): Promise<Role | null>;
   createRole(role: Role): Promise<Role | null>;
   updateRole(role: Role): Promise<Role | null>;
   deleteRole(id: UUID): Promise<boolean>;
+  getLeastPrivilegedRole(): Promise<Role | null>;
 }

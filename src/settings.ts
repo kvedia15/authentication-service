@@ -11,11 +11,18 @@ class PsqlConfig {
   sslmode: string = "disable";
 }
 
+
+export class OwnerUserConfig {
+  username: string = "owner";
+  password: string = "password";
+  email: string = "owner@localhost";
+}
+
 export class Settings {
-  jwtToken: string = "undefined";
   jwtRefreshSecret: string = "undefined";
   jwtSessionSecret: string = "undefined";
   psql: PsqlConfig = new PsqlConfig();
+  ownerUser: OwnerUserConfig = new OwnerUserConfig();
 }
 
 export function loadSettings(filePath: string): Settings {

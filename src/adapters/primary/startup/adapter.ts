@@ -1,29 +1,93 @@
-import Role, { RoleType } from "../../../core/domain/role";
+import Role, { PermissionType, RoleType } from "../../../core/domain/role";
 import { PrimaryAdapter } from "../../../core/ports/primary";
 import { ICreateRole, IRegisterUser } from "../../../core/ports/usecases";
 import monitor from "../../../monitor";
+import { OwnerUserConfig } from "../../../settings";
 
 export class StartupAdapter implements PrimaryAdapter {
-    private registerUserUsecase: IRegisterUser;
-    // private createRoleUsecase: ICreateRole;
-    constructor(
-        registerUserUsecase: IRegisterUser,
-    //    createRoleUsecase: ICreateRole,
-      ) {
-        this.registerUserUsecase = registerUserUsecase;
-        // this.createRoleUsecase = createRoleUsecase;
-      }
+  private registerUserUsecase: IRegisterUser;
+  private createRoleUsecase: ICreateRole;
+  private ownerUserConfig: OwnerUserConfig;
+  constructor(
+    registerUserUsecase: IRegisterUser,
+    createRoleUsecase: ICreateRole,
+    ownerUserConfig: OwnerUserConfig
+  ) {
+    this.registerUserUsecase = registerUserUsecase;
+    this.createRoleUsecase = createRoleUsecase;
+    this.ownerUserConfig = ownerUserConfig;
+  }
 
-      run(): void {
-        let user = this.registerUserUsecase.run("owner", "owner", "owner");
-        if (!user) {
-            monitor.error("Error registering Owner user");
-        }
-        monitor.info("Owner user registered");
-        // this.createRoleUsecase.run(new Role({name: "Owner", isLeastPrivilege: false, roleType: RoleType.OWNER}));
-      }
+  async run(): Promise<void> {
+    monitor.info("Running startup process");
 
-      stop(): void {
-          
-      }
+    //TODO use Get all roles , and check that at least one owner, admin and user exists
+    let ownerRole = await this.createRoleUsecase.run(
+      new Role({
+        name: "Owner",
+        isLeastPrivilege: false,
+        roleType: RoleType.OWNER,
+        permissions: [
+          PermissionType.PERMISSION_MANAGEMENT,
+          PermissionType.USER_MANAGEMENT,
+          PermissionType.READ,
+          PermissionType.WRITE,
+          PermissionType.UPDATE,
+          PermissionType.DELETE,
+        ],
+      })
+    );
+    if (!ownerRole) {
+      monitor.error("Error creating Owner role");
+      throw new Error("Start up failed, cancelling process");
+    }
+    monitor.info("Owner role created");
+
+    let role = await this.createRoleUsecase.run(
+      new Role({
+        name: "User",
+        isLeastPrivilege: true,
+        roleType: RoleType.USER,
+        permissions: [
+          PermissionType.READ,
+        ]
+      })
+    );
+    if (!role) {
+      monitor.error("Error creating User role");
+    }
+    monitor.info("User role created");
+
+    role = await this.createRoleUsecase.run(
+      new Role({
+        name: "Admin",
+        isLeastPrivilege: false,
+        roleType: RoleType.ADMIN,
+        permissions: [
+            PermissionType.READ,
+            PermissionType.WRITE,
+            PermissionType.UPDATE,
+            PermissionType.DELETE,
+          ],
+      })
+    );
+    if (!role) {
+      monitor.error("Error creating Admin role");
+    }
+    monitor.info("Admin role created");
+
+    //TODO add a get user usecase, to check first if an owner exists, if not create
+    let user = this.registerUserUsecase.run(
+      this.ownerUserConfig.username,
+      this.ownerUserConfig.password,
+      this.ownerUserConfig.email,
+      ownerRole
+    );
+    if (!user) {
+      monitor.error("Error registering Owner user");
+    }
+    monitor.info("Owner user registered");
+  }
+
+  stop(): void {}
 }

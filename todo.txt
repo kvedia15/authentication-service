@@ -1,5 +1,5 @@
-CRUD for roles - repo done, usecases left
-migrate USER to use uuid as id
-set up startup logic correctly - setting owner up properly 
-
+delete role - set up usecase and route
+fix tests for roles 
+migrate USER to use uuid as id 
+ 
 

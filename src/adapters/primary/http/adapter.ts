@@ -1,11 +1,15 @@
-import express, { Express } from "express";
+import { Express } from "express";
 import { PrimaryAdapter } from "../../../core/ports/primary";
 import { Server } from "./app_server";
 import {
   IAuthenticateUser,
+  ICreateRole,
+  IGetAllRoles,
+  IGetRole,
   ILogoutUser,
   IRefreshToken,
   IRegisterUser,
+  IUpdateRole,
   IValidateToken,
 } from "../../../core/ports/usecases";
 export class HttpAdapter implements PrimaryAdapter {
@@ -18,14 +22,23 @@ export class HttpAdapter implements PrimaryAdapter {
     authenticateUserUsecase: IAuthenticateUser,
     validateTokenUsecase: IValidateToken,
     logoutUserUsecase: ILogoutUser,
-    refreshTokenUsecase: IRefreshToken
+    refreshTokenUsecase: IRefreshToken,
+    createRole: ICreateRole,
+    getAllRoles: IGetAllRoles,
+    getRole: IGetRole,
+    updateRole: IUpdateRole,
+    
   ) {
     let server = new Server(
       registerUserUsecase,
       authenticateUserUsecase,
       validateTokenUsecase,
       logoutUserUsecase,
-      refreshTokenUsecase
+      refreshTokenUsecase,
+      createRole,
+      getAllRoles,
+      getRole,
+      updateRole,
     );
     this.app = server.app;
     this.port = port;
