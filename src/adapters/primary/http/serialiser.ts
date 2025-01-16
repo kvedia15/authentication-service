@@ -10,7 +10,6 @@ export function toUserResponse(user: User | null, message: string) {
           id: user.Id,
           username: user.Username,
           email: user.Email,
-          sessionToken: user.SessionToken,
           role: user.Role?.roleType,
         }
       : null,

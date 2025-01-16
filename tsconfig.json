@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true
+    "target": "es2016", // which version of JS does TS compile to 
+    "module": "commonjs", //syntax for modules 
+    "outDir": "./dist", // directory for compiled files
+    "rootDir": "./src", //root directory of source files
+    "strict": true, // enable strict type checking
+    "esModuleInterop": true // enable import/export syntax
   },
-  "include": ["src/**/*", "test/**/*"],
-  "exclude": ["node_modules"],
-  "types": ["jest", "node"]
+  "include": ["src/**/*", "test/**/*"], // specify which files to compile
+  "exclude": ["node_modules"], // specify which files to ignore
+  "types": ["jest", "node"]  // specify which types to include
 }

@@ -19,6 +19,7 @@ import { CreateRole } from "./core/usecases/roleUsecases/createRole";
 import { GetAllRoles } from "./core/usecases/roleUsecases/getAllRoles";
 import { GetRole } from "./core/usecases/roleUsecases/getRole";
 import { UpdateRole } from "./core/usecases/roleUsecases/updateRole";
+import { DeleteRole } from "./core/usecases/roleUsecases/deleteRole";
 
 export class Application {
   private settings: Settings;
@@ -64,20 +65,26 @@ export class Application {
 
     //usecases
 
+    //user
     const registerUser = new RegisterUser(userRepo, roleRepo);
     const authenticateUser = new AuthenticateUser(
       userRepo,
       refreshTokenRepo,
       sessionTokenRepo
     );
-    const validateToken = new ValidateToken(this.settings.jwtSessionSecret);
+    const validateToken = new ValidateToken(this.settings.jwtSessionSecret, userRepo);
     const logoutUser = new LogoutUser(userRepo, refreshTokenRepo, sessionTokenRepo);
     const refreshToken = new RefreshToken(userRepo, refreshTokenRepo, sessionTokenRepo);
+    
+    //role
     const createRole = new CreateRole(roleRepo);
-    const startUpAdapter = new StartupAdapter(registerUser, createRole, this.settings.ownerUser);
     const getAllRoles = new GetAllRoles(roleRepo);
     const getRole = new GetRole(roleRepo);
     const updateRole = new UpdateRole(roleRepo);
+    const deleteRole = new DeleteRole(roleRepo);
+    
+    //primaries
+    const startUpAdapter = new StartupAdapter(registerUser, createRole, this.settings.ownerUser);
     const httpAdapter = new HttpAdapter(
       3000,
       registerUser,
@@ -88,7 +95,8 @@ export class Application {
       createRole,
       getAllRoles,
       getRole,
-      updateRole
+      updateRole,
+      deleteRole
     );
     primaryAdapters.push(httpAdapter);
     primaryAdapters.push(startUpAdapter);

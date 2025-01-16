@@ -1,7 +1,8 @@
+import { randomUUID, UUID } from 'crypto';
 import Role from './role';
 
 export default class User {
-  private id: number;
+  private id?: UUID;
   private username: string;
   private password: string | null;
   private email: string | null;
@@ -16,14 +17,14 @@ export default class User {
     email = null,
     sessionToken = null,
   }: {
-    id: number;
+    id?: UUID;
     username: string;
     role?: Role | null;
     password?: string | null;
     email?: string | null;
     sessionToken?: string | null;
   }) {
-    this.id = id;
+    this.id = id || randomUUID();
     this.username = username;
     this.password = password;
     this.email = email;
@@ -42,7 +43,10 @@ export default class User {
     };
   }
 
-  public get Id(): number {
+  public get Id(): UUID {
+    if (!this.id) {
+      this.id = randomUUID();
+    }
     return this.id;
   }
 

@@ -4,6 +4,7 @@ import { Server } from "./app_server";
 import {
   IAuthenticateUser,
   ICreateRole,
+  IDeleteRole,
   IGetAllRoles,
   IGetRole,
   ILogoutUser,
@@ -27,7 +28,7 @@ export class HttpAdapter implements PrimaryAdapter {
     getAllRoles: IGetAllRoles,
     getRole: IGetRole,
     updateRole: IUpdateRole,
-    
+    deleteRole: IDeleteRole
   ) {
     let server = new Server(
       registerUserUsecase,
@@ -39,6 +40,7 @@ export class HttpAdapter implements PrimaryAdapter {
       getAllRoles,
       getRole,
       updateRole,
+      deleteRole
     );
     this.app = server.app;
     this.port = port;

@@ -1,5 +1,16 @@
-delete role - set up usecase and route
-fix tests for roles 
-migrate USER to use uuid as id 
- 
+make sure all tokens are assined in cookies  - done (can use cleanup)
+make middleware for endpoints so that authorization is applied (done, need to apply to all endpoints properly)
+migrate USER to use uuid as id - done
+CreateRoles/UpdateRoles can only be done by Owner/Admin - done
+GetAllRoles/GetRole can be done by all roles (All Roles) - done
+
+
+make settings file clean and structured, find all settings stuff and make sure configurable
+make tests cleaner
+
+
+
+
+apply rate limiting on end points, make the rate limit based on role and privileges
+
 

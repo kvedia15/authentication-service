@@ -22,12 +22,13 @@ export class Server {
   registerUserUsecase: IRegisterUser;
   authenticateUserUsecase: IAuthenticateUser;
   validateTokenUsecase: IValidateToken;
-  logoutUserUsecase: ILogoutUser;
+  logoutUserUsecase: ILogoutUser; 
   refreshTokenUsecase: IRefreshToken;
   createRoleUsecase: ICreateRole;
   getAllRolesUsecase: IGetAllRoles;
   getRoleUsecase: IGetRole;
   updateRoleUsecase: IUpdateRole;
+  deleteRoleUsecase: IDeleteRole;
 
 
   public constructor(
@@ -40,6 +41,7 @@ export class Server {
     getAllRolesUsecase: IGetAllRoles,
     getRoleUsecase: IGetRole,
     updateRoleUsecase: IUpdateRole,
+    deleteRoleUsecase: IDeleteRole
   ) {
     this.app = express();
     this.registerUserUsecase = registerUserUsecase;
@@ -51,6 +53,7 @@ export class Server {
     this.getAllRolesUsecase = getAllRolesUsecase;
     this.getRoleUsecase = getRoleUsecase;
     this.updateRoleUsecase = updateRoleUsecase;
+    this.deleteRoleUsecase = deleteRoleUsecase
 
     //middlewares
 
@@ -72,16 +75,20 @@ export class Server {
       this.registerUserUsecase,
       this.authenticateUserUsecase,
       this.logoutUserUsecase,
-      this.refreshTokenUsecase
+      this.refreshTokenUsecase,
+      this.getAllRolesUsecase,
+      this.validateTokenUsecase
     )
 
     const roleRoutes = new RoleRoutes(
       this.createRoleUsecase,
       this.getAllRolesUsecase,
       this.getRoleUsecase,
-      this.updateRoleUsecase
+      this.updateRoleUsecase,
+      this.validateTokenUsecase
     )
     this.app.use(userRoutes.GetRouter())
     this.app.use(roleRoutes.GetRouter())
+
   }
 }

@@ -69,9 +69,8 @@ export class InMemTokenRepo implements ITokenRepo {
             monitor.error(`No user found for the provided ${this.tokenRepoType} token ${token}`);
             return null;
           }
-      
-          const index = Array.from(this.tokenStore.keys()).indexOf(token);
-          return new User({id: index, username: username});
+          
+          return new User({username: username});
         } catch (error) {
           monitor.error("Invalid token:", error);
           return null;
