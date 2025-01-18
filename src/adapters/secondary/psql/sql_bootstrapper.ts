@@ -1,20 +1,20 @@
 import fs from 'fs';
 import path from 'path';
 
-export class Statement {
+export class Statement<T> {
 query: string;
-private _params: any;
+private _params: Array<any>;
 
-constructor(query: string, params: any = []) {
+constructor(query: string, params: Array<any>) {
     this.query = query;
     this._params = params;
 }
 
-get params(): any {
+get params(): Array<any> {
     return this._params;
 }
 
-setParams(...args: any): Statement {
+setParams(...args: Array<any>): Statement<T> {
     this._params = args;
     return this;
 }
@@ -47,11 +47,11 @@ export class SQLBootstrapper {
     return queries;
   }
 
-  get(name: string, params: any): Statement {
+  get<T>(name: string, params: Array<any>): Statement<T> {
     const query = this.queries[name];
     if (!query) {
       throw new Error(`SQL for name=${name} not found in queries folder`);
     }
-    return new Statement(query, params);
+    return new Statement<T>(query, params);
   }
 }

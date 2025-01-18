@@ -3,6 +3,7 @@ import { AsyncPool } from "../psql/pool";
 import { SQLBootstrapper } from "../psql/sql_bootstrapper";
 import User from "../../../core/domain/user";
 import Role from "../../../core/domain/role";
+import { Optional } from "../../../core/domain/result";
 export class PsqlUserRepo implements IUserRepo {
   private pool: AsyncPool;
   private queries: SQLBootstrapper;
@@ -13,13 +14,10 @@ export class PsqlUserRepo implements IUserRepo {
   }
 
   public async createUser(
-    username: string,
-    password: string,
-    email: string,
-    role?: Role
-  ): Promise<User | null> {
-    const newUser = await this.pool.exec(
-      this.queries.get("create_user", [username, password, email]),
+    user: User
+  ): Promise<Optional<User>> {
+    const newUser = await this.pool.exec<User>(
+      this.queries.get<User>("create_user", [user.Username, user.Password, user.Email]),
       (result) => {
         const item = result.rows[0];
         if (!item) {
@@ -39,13 +37,13 @@ export class PsqlUserRepo implements IUserRepo {
     return null;
   }
 
-  public async getUser(username: string): Promise<User | undefined> {
-    const user = await this.pool.exec(
+  public async getUser(username: string): Promise<Optional<User>> {
+    const user = await this.pool.exec<User>(
       this.queries.get("get_user", [username]),
       (result) => {
         const item = result.rows[0];
         if (!item) {
-          return undefined;
+          return null;
         }
         const user: User = new User(
          { id: item.id,
@@ -60,6 +58,6 @@ export class PsqlUserRepo implements IUserRepo {
     if (user) {
       return user;
     }
-    return undefined;
+    return null;
   }
   }

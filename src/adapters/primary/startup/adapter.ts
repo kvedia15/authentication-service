@@ -1,4 +1,4 @@
-import Role, { PermissionType, RoleType } from "../../../core/domain/role";
+import Role, { RoleType } from "../../../core/domain/role";
 import { PrimaryAdapter } from "../../../core/ports/primary";
 import { ICreateRole, IRegisterUser } from "../../../core/ports/usecases";
 import monitor from "../../../monitor";
@@ -27,14 +27,6 @@ export class StartupAdapter implements PrimaryAdapter {
         name: "Owner",
         isLeastPrivilege: false,
         roleType: RoleType.OWNER,
-        permissions: [
-          PermissionType.PERMISSION_MANAGEMENT,
-          PermissionType.USER_MANAGEMENT,
-          PermissionType.READ,
-          PermissionType.WRITE,
-          PermissionType.UPDATE,
-          PermissionType.DELETE,
-        ],
       })
     );
     if (!ownerRole) {
@@ -48,9 +40,6 @@ export class StartupAdapter implements PrimaryAdapter {
         name: "User",
         isLeastPrivilege: true,
         roleType: RoleType.USER,
-        permissions: [
-          PermissionType.READ,
-        ]
       })
     );
     if (!role) {
@@ -63,12 +52,6 @@ export class StartupAdapter implements PrimaryAdapter {
         name: "Admin",
         isLeastPrivilege: false,
         roleType: RoleType.ADMIN,
-        permissions: [
-            PermissionType.READ,
-            PermissionType.WRITE,
-            PermissionType.UPDATE,
-            PermissionType.DELETE,
-          ],
       })
     );
     if (!role) {
@@ -77,7 +60,7 @@ export class StartupAdapter implements PrimaryAdapter {
     monitor.info("Admin role created");
 
     //TODO add a get user usecase, to check first if an owner exists, if not create
-    let user = this.registerUserUsecase.run(
+    let user = await this.registerUserUsecase.run(
       this.ownerUserConfig.username,
       this.ownerUserConfig.password,
       this.ownerUserConfig.email,

@@ -1,14 +1,16 @@
 import { randomUUID, UUID } from 'crypto';
 import Role from './role';
+import { Optional } from './result';
 
 export default class User {
   private id?: UUID;
   private username: string;
-  private password: string | null;
-  private email: string | null;
-  private sessionToken: string | null;
-  private refreshToken: string | null;
+  private password: Optional<string>;
+  private email: Optional<string>;
+  private sessionToken: Optional<string>;
+  private refreshToken: Optional<string>;
   private role: Role | null;
+
   constructor({
     id,
     username,

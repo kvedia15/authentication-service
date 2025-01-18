@@ -47,7 +47,7 @@ export class Application {
       })
       let asyncPool = new AsyncPool(pool);
       const sqlBootstrapper = new SQLBootstrapper();
-      userRepo = new PsqlUserRepo(asyncPool, sqlBootstrapper);
+      // userRepo = new PsqlUserRepo(asyncPool, sqlBootstrapper);
     }
 
 

@@ -13,6 +13,7 @@ import {
   IUpdateRole,
   IValidateToken,
 } from "../../../core/ports/usecases";
+import monitor from "../../../monitor";
 export class HttpAdapter implements PrimaryAdapter {
   app: Express;
   private port: number;
@@ -47,14 +48,14 @@ export class HttpAdapter implements PrimaryAdapter {
   }
 
   run() {
-    console.log("Running http adapter");
+    monitor.info("Running http adapter");
     this.app.listen(this.port, () => {
-      console.log(`App listening on port ${this.port}`);
+      monitor.info(`App listening on port ${this.port}`);
     });
     
   }
 
   stop() {
-    console.log("stopping http adapter");
+    monitor.info("stopping http adapter");
   }
 }

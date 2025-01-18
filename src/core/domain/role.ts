@@ -1,18 +1,24 @@
 import { randomUUID, UUID } from "crypto";
 
-export enum PermissionType {
-  USER_MANAGEMENT = "USER_MANAGEMENT",
-  PERMISSION_MANAGEMENT = "PERMISSION_MANAGEMENT",
-  READ = "READ",
-  WRITE = "WRITE",
-  UPDATE = "UPDATE",
-  DELETE = "DELETE",
-}
 
-export interface Permission {
+
+export class Permission {
   id: string;
   name: string;
-  permissionType: PermissionType;
+  permissionAction: string;
+
+  constructor({
+    id,
+    name,
+    permissionAction,
+  }: {
+    id: string;
+    name: string;
+    permissionAction: string;
+  }) {this.id = id
+    this.name = name
+    this.permissionAction = permissionAction
+  }
 }
 
 export enum RoleType {
@@ -25,10 +31,11 @@ export default class Role {
   id: UUID;
   name: string;
   roleType: RoleType;
-  permissions: PermissionType[];
+  permissions: Permission[];
   createdAt: Date;
   updatedAt: Date;
   isLeastPrivilege: boolean;
+  // customPermissions: Permission[]
 
   constructor({
     id,
@@ -38,24 +45,25 @@ export default class Role {
     createdAt,
     updatedAt,
     isLeastPrivilege,
-  }: {
+  }: // customPermissions,
+  {
     id?: UUID;
     name: string;
     roleType?: RoleType;
-    permissions?: PermissionType[];
+    permissions?: Permission[];
     createdAt?: Date;
     updatedAt?: Date;
     isLeastPrivilege?: boolean;
-  }
-   
-  ) {
+    // customPermissions: Permission[];
+  }) {
     this.id = id || randomUUID();
     this.name = name;
     this.roleType = roleType || RoleType.USER;
-    this.permissions = permissions || [PermissionType.READ];
+    this.permissions = permissions || [];
     this.createdAt = createdAt || new Date();
     this.updatedAt = updatedAt || new Date();
     this.isLeastPrivilege = isLeastPrivilege || false;
+    // this.customPermissions = customPermissions || []
   }
 
   public get Id(): UUID {
@@ -70,7 +78,7 @@ export default class Role {
     return this.roleType;
   }
 
-  public get Permissions(): PermissionType[] {
+  public get Permissions(): Permission[] {
     return this.permissions;
   }
 }

@@ -1,11 +1,12 @@
+import { Optional } from "../../../core/domain/result";
 import Role from "../../../core/domain/role";
 import User from "../../../core/domain/user";
 
 
-export function toUserResponse(user: User | null, message: string) {
+export function toUserResponse(user: Optional<User>, message: string) {
   return {
     success: !!user,
-    user: user
+    data: user
       ? {
           id: user.Id,
           username: user.Username,
@@ -17,10 +18,10 @@ export function toUserResponse(user: User | null, message: string) {
   };
 }
 
-export function toRoleResponse(role: Role | null, message: string) {
+export function toRoleResponse(role: Optional<Role>, message: string) {
   return {
     success: !!role,
-    role: role
+    data: role
       ? {
           id: role.Id,
           name: role.Name,

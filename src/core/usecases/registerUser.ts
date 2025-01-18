@@ -25,15 +25,12 @@ export class RegisterUser implements IRegisterUser {
     let existingUser = await this.userRepo.getUser(username);
     if (existingUser) {
       monitor.info("User already exists");
-      return { user: null, message: "User already exists" };
+      return { user: existingUser, message: "User already exists" };
     }
     try {
-      const passwordHash = await bcrypt.hash(password, saltRounds);
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
       const registeredUser = await this.userRepo.createUser(
-        username,
-        passwordHash,
-        email,
-        role
+        new User({username: username, password: hashedPassword, role: role, email:email})
       );
       if (!registeredUser) {
         return { user: null, message: "An error occurred while registering the user" };

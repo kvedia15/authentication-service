@@ -17,6 +17,7 @@ export class LogoutUser implements ILogoutUser {
     public async run(refreshToken: string, sessionToken: string): Promise<User | null> {
       try {
         let user = await this.refreshTokenRepo.getUserFromToken(refreshToken);
+        
         let sessionTokenClearSuccess = await this.sessionTokenRepo.clearToken(sessionToken);
         if (!sessionTokenClearSuccess) {
             monitor.info("could not clear session token");
@@ -24,6 +25,7 @@ export class LogoutUser implements ILogoutUser {
         }
 
         let refreshTokenClearSuccess = await this.refreshTokenRepo.clearToken(refreshToken);
+        
         if (!refreshTokenClearSuccess) {
             monitor.info("could not clear refresh token");
             return null;
@@ -32,6 +34,7 @@ export class LogoutUser implements ILogoutUser {
             monitor.info("no user found for the provided refresh token");
           return null;
         }
+        
         let userFetched = await this.userRepo.getUser(user?.Username ?? "");
         
         if (!userFetched) {

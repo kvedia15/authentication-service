@@ -3,6 +3,7 @@ import { ITokenRepo, IUserRepo } from "../ports/secondary";
 import { IAuthenticateUser } from "../ports/usecases";
 import bcrypt from "bcrypt";
 import monitor from "../../monitor";
+import { Optional } from "../domain/result";
 export class AuthenticateUser implements IAuthenticateUser {
   private userRepo: IUserRepo;
   private refreshTokenRepo: ITokenRepo;
@@ -12,7 +13,7 @@ export class AuthenticateUser implements IAuthenticateUser {
     this.refreshTokenRepo = refreshTokenRepo;
     this.sessionTokenRepo = sessionTokenRepo;
   }
-  public async run(username: string, password: string): Promise<User | null> {
+  public async run(username: string, password: string): Promise<Optional<User>> {
     const userFound = await this.userRepo.getUser(username);
     if (!userFound) {
       monitor.info("User not found");
@@ -24,6 +25,7 @@ export class AuthenticateUser implements IAuthenticateUser {
     }
     const isMatch = await bcrypt.compare(password, passwordHash);
     if (!isMatch) {
+      monitor.info(`User ${userFound?.Username} is not match`)
       return null;
     }
 

@@ -22,7 +22,7 @@ export class AsyncPool {
   }
 
 
-  async exec<T>(stm: Statement, then: (result: QueryResult) => T): Promise<T> {
+  async exec<T>(stm: Statement<T>, then: (result: QueryResult<any>) => T | null): Promise<T | null> {
     const client = await this.asyncSession();
     try {
       monitor.debug(`executing ${stm.query} with params ${stm.params}`);
@@ -34,7 +34,7 @@ export class AsyncPool {
   }
 
   async execWithTransaction<T>(
-    stm: Statement,
+    stm: Statement<T>,
     then: (result: QueryResult) => T
   ): Promise<T | null> {
     const client = await this.asyncSessionWithTransaction();

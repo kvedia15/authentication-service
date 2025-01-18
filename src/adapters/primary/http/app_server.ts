@@ -58,9 +58,7 @@ export class Server {
     //middlewares
 
     this.app.use(cors({
-      origin: "http://localhost:5173"
-
-    }));
+      origin: "http://localhost:5173"}));
     this.app.use(express.json());
     this.app.use(
       morgan("combined", {

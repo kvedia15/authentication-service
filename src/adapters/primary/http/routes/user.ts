@@ -51,7 +51,7 @@ export class UserRoutes {
           .json(toUserResponse(null, registeredUser.message));
       }
 
-      return res.status(201).json(toUserResponse(registeredUser.user, ""));
+      return res.status(201).json(toUserResponse(registeredUser.user, "User created successfully"));
     });
 
     userRouter.post(

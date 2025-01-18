@@ -1,32 +1,30 @@
 import { UUID } from "crypto";
 import Role from "../domain/role";
 import User from "../domain/user";
+import { Optional } from "../domain/result";
 
 export interface IUserRepo {
   createUser(
-    username: string,
-    password: string,
-    email: string,
-    role?: Role
-  ): Promise<User | null>;
-  getUser(username: string): Promise<User | undefined>;
+    user: User
+  ): Promise<Optional<User>>;
+  getUser(username: string): Promise<Optional<User>>;
 }
 
 
 
 
 export interface ITokenRepo {
-  setToken(username: string, token?: string): Promise<string | null>;
-  getToken(username: string): Promise<string | null>;
+  setToken(username: string, token?: string): Promise<Optional<string>>;
+  getToken(username: string): Promise<Optional<string>>;
   clearToken(token: string): Promise<boolean>
-  getUserFromToken(token: string): Promise<User | null>;
+  getUserFromToken(token: string): Promise<Optional<User>>;
 }
 
 export interface IRoleRepo {
   getAllRoles(limit: number, offset: number): Promise<Role[]>;
-  getRole(id: UUID): Promise<Role | null>;
-  createRole(role: Role): Promise<Role | null>;
-  updateRole(role: Role): Promise<Role | null>;
+  getRole(id: UUID): Promise<Optional<Role>>;
+  createRole(role: Role): Promise<Optional<Role>>;
+  updateRole(role: Role): Promise<Optional<Role>>;
   deleteRole(id: UUID): Promise<boolean>;
-  getLeastPrivilegedRole(): Promise<Role | null>;
+  getLeastPrivilegedRole(): Promise<Optional<Role>>;
 }

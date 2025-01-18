@@ -1,3 +1,4 @@
+import { Optional } from "../../domain/result";
 import Role from "../../domain/role";
 import { IRoleRepo } from "../../ports/secondary";
 import { ICreateRole } from "../../ports/usecases";
@@ -9,7 +10,8 @@ export class CreateRole implements ICreateRole {
     ) {
         this.roleRepo = roleRepo;
     }
-    run(role: Role): Promise<Role | null> {
-        return this.roleRepo.createRole(role);
+    async run(role: Role): Promise<Optional<Role>> {
+        const createdRole = await this.roleRepo.createRole(role);
+        return createdRole
     }
 }

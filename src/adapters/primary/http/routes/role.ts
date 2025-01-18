@@ -91,6 +91,8 @@ export class RoleRoutes {
             name: name,
             roleType: roleType,
             permissions: permissions,
+            // customPermissions: []
+            
           })
         );
         if (!role) {
@@ -120,6 +122,7 @@ export class RoleRoutes {
             name: name,
             roleType: roleType,
             permissions: permissions,
+            // customPermissions: []
           })
         );
         if (!role) {
@@ -147,6 +150,8 @@ export class RoleRoutes {
             name: role.Name,
             roleType: role.RoleType,
             permissions: role.Permissions,
+            // customPermissions: []
+
           })
         );
         if (!deletedRole) {

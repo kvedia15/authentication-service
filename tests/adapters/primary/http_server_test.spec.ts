@@ -13,7 +13,7 @@ import { GetRole } from "../../../src/core/usecases/roleUsecases/getRole";
 import { UpdateRole } from "../../../src/core/usecases/roleUsecases/updateRole";
 import { InMemRoleRepo } from "../../../src/adapters/secondary/role_repo/inmem";
 import { DeleteRole } from "../../../src/core/usecases/roleUsecases/deleteRole";
-import Role, { PermissionType, RoleType } from "../../../src/core/domain/role";
+import Role, { RoleType } from "../../../src/core/domain/role";
 import { randomUUID } from "crypto";
 describe("User API Routes Test Suite", () => {
   let server: Server;
@@ -122,7 +122,7 @@ describe("User API Routes Test Suite", () => {
       .expect(201)
       .then((response) => {
         expect(response.body.success).toBe(true);
-        expect(response.body.user.username).toBe("newUser");
+        expect(response.body.data.username).toBe("newUser");
       });
   });
 
@@ -153,7 +153,7 @@ describe("User API Routes Test Suite", () => {
       .expect(200)
       .then((response) => {
         expect(response.body.success).toBe(true);
-        expect(response.body.user.username).toBe("newUser");
+        expect(response.body.data.username).toBe("newUser");
       });
   });
 
@@ -178,7 +178,7 @@ describe("User API Routes Test Suite", () => {
       .expect(201)
       .then((response) => {
         expect(response.body.success).toBe(true);
-        expect(response.body.user.username).toBe("newUser2");
+        expect(response.body.data.username).toBe("newUser2");
       });
 
     const loginResponse = await request(server.app)
@@ -195,7 +195,7 @@ describe("User API Routes Test Suite", () => {
       .expect(200)
       .then((response) => {
         expect(response.body.success).toBe(true);
-        expect(response.body.user.username).toBe("newUser2");
+        expect(response.body.data.username).toBe("newUser2");
       });
   });
 
@@ -221,7 +221,7 @@ describe("User API Routes Test Suite", () => {
       .expect(201)
       .then((response) => {
         expect(response.body.success).toBe(true);
-        expect(response.body.user.username).toBe("newUser3");
+        expect(response.body.data.username).toBe("newUser3");
       });
   
     const {refreshToken, sessionToken} = await loginAndGetCookies("newUser3", "password123");
@@ -249,12 +249,6 @@ describe("User API Routes Test Suite", () => {
       name: "testAdminRole",
       isLeastPrivilege: false,
       roleType: RoleType.ADMIN,
-      permissions: [
-          PermissionType.READ,
-          PermissionType.WRITE,
-          PermissionType.DELETE,
-          PermissionType.UPDATE
-      ]
     }))
     if (adminRole){
       await registerUser.run("testAdminUser", "testAdminPassword", "test@me.com", adminRole);
@@ -267,14 +261,12 @@ describe("User API Routes Test Suite", () => {
         id: basicUserUuid,
         name: "basicUser",
         roleType: "USER",
-        permissions: ["READ", "WRITE"],
       })
       .expect(201)
       .then((response) => {
-        expect(response.body.role.name).toBe("basicUser");
-        expect(response.body.role.roleType).toBe("USER");
-        expect(response.body.role.permissions).toEqual(["READ", "WRITE"]);
-        expect(response.body.role.id).toBe(basicUserUuid);
+        expect(response.body.data.name).toBe("basicUser");
+        expect(response.body.data.roleType).toBe("USER");
+        expect(response.body.data.id).toBe(basicUserUuid);
       });
   });
 
@@ -298,10 +290,10 @@ describe("User API Routes Test Suite", () => {
       .set("Cookie", [`refreshToken=${refreshToken}; sessionToken=${sessionToken}`])
       .expect(200)
       .then((response) => {
-        expect(response.body.role.name).toBe("basicUser");
-        expect(response.body.role.roleType).toBe("USER");
-        expect(response.body.role.permissions).toEqual(["READ", "WRITE"]);
-        expect(response.body.role.id).toBe(basicUserUuid);
+        expect(response.body.data.name).toBe("basicUser");
+        expect(response.body.data.roleType).toBe("USER");
+        expect(response.body.data.permissions).toEqual([]);
+        expect(response.body.data.id).toBe(basicUserUuid);
       });
   });
 
@@ -315,14 +307,12 @@ describe("User API Routes Test Suite", () => {
         id: basicUserUuid,
         name: "basicUser",
         roleType: "USER",
-        permissions: ["READ","WRITE", "UPDATE"],
       })
       .expect(200)
       .then((response) => {
-        expect(response.body.role.name).toBe("basicUser");
-        expect(response.body.role.roleType).toBe("USER");
-        expect(response.body.role.permissions).toEqual(["READ", "WRITE", "UPDATE"]);
-        expect(response.body.role.id).toBe(basicUserUuid);
+        expect(response.body.data.name).toBe("basicUser");
+        expect(response.body.data.roleType).toBe("USER");
+        expect(response.body.data.id).toBe(basicUserUuid);
       });
   });
 
