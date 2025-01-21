@@ -8,6 +8,9 @@ export interface IUserRepo {
     user: User
   ): Promise<Optional<User>>;
   getUser(username: string): Promise<Optional<User>>;
+  getAllUsers(limit: number, offset: number): Promise<User[]>;
+  updateUser(user: User): Promise<Optional<User>>;
+  deleteUser(id: UUID): Promise<boolean>;
 }
 
 

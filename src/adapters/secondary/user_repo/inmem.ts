@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { Optional } from "../../../core/domain/result";
 import Role, { RoleType } from "../../../core/domain/role";
 import User from "../../../core/domain/user";
@@ -18,4 +19,29 @@ export class InMemUserRepo implements IUserRepo {
     this.users.push(userToCreate);
     return user;
   }
+
+  public async getAllUsers(limit: number, offset: number): Promise<User[]> {
+    return this.users.slice(offset, offset + limit);
+  }
+
+  public async updateUser(user: User): Promise<Optional<User>> {
+    for (let i = 0; i < this.users.length; i++) {
+      if (this.users[i].Id === user.Id) {
+        this.users[i] = user;
+        return user;
+      }
+    }
+    return null
+  }
+
+  public async deleteUser(id: UUID): Promise<boolean> {
+    for (let i = 0; i < this.users.length; i++) {
+      if (this.users[i].Id === id) {
+        this.users.splice(i, 1);
+        return true;
+      }
+    }
+    return false
+  }
+
 }

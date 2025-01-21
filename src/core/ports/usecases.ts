@@ -45,3 +45,23 @@ export interface IUpdateRole {
 export interface IDeleteRole {
   run(id: UUID): Promise<boolean>;
 }
+
+export interface IGetUser {
+  run(username: string): Promise<Optional<User>>;
+}
+
+export interface IGetAllUsers {
+  run(limit: number, offset: number): Promise<User[]>;
+}
+
+export interface ICreateUser {
+  run(user: User): Promise<Optional<User>>;
+}
+
+export interface IUpdateUser {
+  run(user: User): Promise<Optional<User>>;
+}
+
+export interface IDeleteUser {
+  run(id: UUID): Promise<boolean>;
+}

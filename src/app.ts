@@ -9,7 +9,7 @@ import { Settings } from "./settings";
 import { AsyncPool } from "./adapters/secondary/psql/pool";
 import { Pool} from 'pg';
 import { SQLBootstrapper } from "./adapters/secondary/psql/sql_bootstrapper";
-import { PsqlUserRepo } from "./adapters/secondary/user_repo/psql";
+// import { PsqlUserRepo } from "./adapters/secondary/user_repo/psql";
 import { InMemTokenRepo, TokenRepoType } from "./adapters/secondary/token_repo/inmem";
 import { LogoutUser } from "./core/usecases/logoutUser";
 import { RefreshToken } from "./core/usecases/refreshToken";
