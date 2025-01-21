@@ -88,7 +88,8 @@ describe("User API Routes Test Suite", () => {
     refreshToken = new RefreshToken(
       inMemUserRepo,
       refreshTokenRepo,
-      sessionTokenRepo
+      sessionTokenRepo,
+      validateToken
     );
     createRole = new CreateRole(inMemRoleRepo);
     getAllRoles = new GetAllRoles(inMemRoleRepo);

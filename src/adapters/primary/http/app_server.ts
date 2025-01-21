@@ -57,8 +57,24 @@ export class Server {
 
     //middlewares
 
-    this.app.use(cors({
-      origin: "http://localhost:5173"}));
+    const corsOptions = {
+      origin: 'http://localhost:5173',
+      credentials: true,
+      optionsSuccessStatus: 200,
+    };
+    
+    this.app.use(cors(corsOptions));
+    
+    this.app.use(function(req, res, next) {
+      res.header('Content-Type', 'application/json;charset=UTF-8')
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+      )
+      next()
+    })
+
     this.app.use(express.json());
     this.app.use(
       morgan("combined", {

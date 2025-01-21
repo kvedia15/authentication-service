@@ -35,6 +35,7 @@ export class ValidateToken {
     token: string,
   ): Promise<{ userId: number; username: string } | null> {
     return new Promise((resolve, reject) => {
+      
       jwt.verify(token, this.jwtSecret, (err, decoded) => {
         if (err) {
           return resolve(null);

@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { ITokenRepo } from "../../../core/ports/secondary";
 import monitor from "../../../monitor";
 import User from "../../../core/domain/user";
+import { Optional } from "../../../core/domain/result";
 
 
 export enum TokenRepoType {
@@ -25,18 +26,21 @@ export class InMemTokenRepo implements ITokenRepo {
         this.tokenRepoType = tokenRepoType;
     }
 
-    public async setToken(username: string, token?: string): Promise<string | null> {
+    public async setToken(username: string, token: Optional<string>): Promise<Optional<string>> {
         try {
-            const newToken = token || jwt.sign({ username }, this.secret, { expiresIn: this.expiresIn });
-
-            this.tokenStore.set(newToken, username);
-            this.userTokenStore.set(username, newToken);
+            
+            if (token === null) {
+                token = jwt.sign({ username }, this.secret, { expiresIn: this.expiresIn });
+            }
+            this.tokenStore.set(token, username);
+            this.userTokenStore.set(username, token);
             monitor.info(token ? `Using provided ${this.tokenRepoType}  token` : `Generated a new ${this.tokenRepoType} token`);
-            return newToken;
-        } catch (err) {
+            return token;
+         } catch (err) {
             monitor.error(`Error generating ${this.tokenRepoType} token`, err);
             return null;
         }
+        return null;
     }
 
     public async getToken(username: string): Promise<string | null> {
@@ -64,13 +68,9 @@ export class InMemTokenRepo implements ITokenRepo {
         try {
           const decoded = jwt.verify(token, this.secret) as { username: string };
             
-          const username = this.tokenStore.get(token);
-          if (!username) {
-            monitor.error(`No user found for the provided ${this.tokenRepoType} token ${token}`);
-            return null;
-          }
+
           
-          return new User({username: username});
+          return new User({username: decoded.username});
         } catch (error) {
           monitor.error("Invalid token:", error);
           return null;
@@ -89,4 +89,6 @@ export class InMemTokenRepo implements ITokenRepo {
 
         return true;
     }
+
 }
+    

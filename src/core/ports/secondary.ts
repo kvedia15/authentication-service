@@ -14,7 +14,7 @@ export interface IUserRepo {
 
 
 export interface ITokenRepo {
-  setToken(username: string, token?: string): Promise<Optional<string>>;
+  setToken(username: string, token: Optional<string>): Promise<Optional<string>>;
   getToken(username: string): Promise<Optional<string>>;
   clearToken(token: string): Promise<boolean>
   getUserFromToken(token: string): Promise<Optional<User>>;

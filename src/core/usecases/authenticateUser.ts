@@ -31,7 +31,7 @@ export class AuthenticateUser implements IAuthenticateUser {
 
     let sessionToken = await this.sessionTokenRepo.getToken(userFound.Username);
     if (!sessionToken) {
-      sessionToken = await this.sessionTokenRepo.setToken(userFound.Username);
+      sessionToken = await this.sessionTokenRepo.setToken(userFound.Username, null);
     }
 
 
@@ -41,7 +41,7 @@ export class AuthenticateUser implements IAuthenticateUser {
 
     let refreshToken = await this.refreshTokenRepo.getToken(userFound.Username);
     if (!refreshToken) {
-      refreshToken = await this.refreshTokenRepo.setToken(userFound.Username);
+      refreshToken = await this.refreshTokenRepo.setToken(userFound.Username, null);
     }
     if (refreshToken !== null) {
       userFound.RefreshToken = refreshToken;

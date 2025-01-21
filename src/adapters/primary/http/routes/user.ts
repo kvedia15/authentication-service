@@ -110,11 +110,13 @@ export class UserRoutes {
 
         const refreshToken = authenticatedUser.RefreshToken;
 
-        res.cookie("refreshToken", refreshToken, {
+
+
+        res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
+          secure: false, // Set to true in production
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
         res.cookie("sessionToken", authenticatedUser.SessionToken, {
@@ -161,15 +163,15 @@ export class UserRoutes {
         }
 
         res.clearCookie("refreshToken", {
-          httpOnly: true,
+          httpOnly: false,
           secure: true,
-          sameSite: "strict",
+          sameSite: "none",
         });
 
         res.clearCookie("sessionToken", {
-          httpOnly: true,
+          httpOnly: false,
           secure: true,
-          sameSite: "strict",
+          sameSite: "none",
         });
 
         return res.status(200).json(toUserResponse(user, ""));
@@ -198,9 +200,9 @@ export class UserRoutes {
             .json(toUserResponse(null, "Invalid or expired refresh token"));
         }
         res.cookie("sessionToken", user.SessionToken, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
+          httpOnly: false,
+          secure: true,
+          sameSite: "none",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 

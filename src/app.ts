@@ -74,7 +74,7 @@ export class Application {
     );
     const validateToken = new ValidateToken(this.settings.jwtSessionSecret, userRepo);
     const logoutUser = new LogoutUser(userRepo, refreshTokenRepo, sessionTokenRepo);
-    const refreshToken = new RefreshToken(userRepo, refreshTokenRepo, sessionTokenRepo);
+    const refreshToken = new RefreshToken(userRepo, refreshTokenRepo, sessionTokenRepo, validateToken);
     
     //role
     const createRole = new CreateRole(roleRepo);
