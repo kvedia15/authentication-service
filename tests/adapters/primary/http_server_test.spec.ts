@@ -14,7 +14,11 @@ import { UpdateRole } from "../../../src/core/usecases/roleUsecases/updateRole";
 import { InMemRoleRepo } from "../../../src/adapters/secondary/role_repo/inmem";
 import { DeleteRole } from "../../../src/core/usecases/roleUsecases/deleteRole";
 import Role, { RoleType } from "../../../src/core/domain/role";
+import GetUser from "../../../src/core/usecases/userUsecases/getUser";
+import UpdateUser from "../../../src/core/usecases/userUsecases/updateUser";
+import GetAllUsers from "../../../src/core/usecases/userUsecases/getAllUsers";
 import { randomUUID } from "crypto";
+import { IGetAllUsers, IGetUser, IUpdateUser } from "../../../src/core/ports/usecases";
 describe("User API Routes Test Suite", () => {
   let server: Server;
   let inMemUserRepo: InMemUserRepo;
@@ -31,6 +35,9 @@ describe("User API Routes Test Suite", () => {
   let getRole: GetRole;
   let updateRole: UpdateRole;
   let deleteRole: DeleteRole;
+  let getUser: IGetUser;
+  let getAllUsers: IGetAllUsers;
+  let updateUser: IUpdateUser;
   let basicUserUuid = randomUUID();
 
   const loginAndGetCookies = async (username: string, password: string) => {
@@ -96,6 +103,9 @@ describe("User API Routes Test Suite", () => {
     getRole = new GetRole(inMemRoleRepo);
     updateRole = new UpdateRole(inMemRoleRepo);
     deleteRole = new DeleteRole(inMemRoleRepo);
+    getUser = new GetUser(inMemUserRepo);
+    getAllUsers = new GetAllUsers(inMemUserRepo);
+    updateUser = new UpdateUser(inMemUserRepo);
     server = new Server(
       registerUser,
       authenticateUser,
@@ -106,7 +116,10 @@ describe("User API Routes Test Suite", () => {
       getAllRoles,
       getRole,
       updateRole,
-      deleteRole
+      deleteRole,
+      getUser,
+      getAllUsers,
+      updateUser,
     );
   });
 

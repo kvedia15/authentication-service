@@ -5,7 +5,7 @@ import { IGetAllUsers, IGetUser } from "../../ports/usecases";
 
 export default class GetAllUsers implements IGetAllUsers {
     constructor(private userRepo: IUserRepo) {}
-    async run(limit: number, offset: number): Promise<User[]> {
+    public async run(limit: number, offset: number): Promise<User[]> {
         return await this.userRepo.getAllUsers(limit, offset);
     }
 }

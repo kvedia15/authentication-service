@@ -1,6 +1,7 @@
 import fs from "fs";
 import yaml from "js-yaml";
 import { plainToClass } from "class-transformer";
+import monitor from "./monitor";
 class PsqlConfig {
   enabled: boolean = false;
   host: string = "localhost";
@@ -31,7 +32,7 @@ export function loadSettings(filePath: string): Settings {
     const loadedYaml = yaml.load(fileContents) as object;
     return plainToClass(Settings, loadedYaml);
   } catch (err) {
-    console.error(`Error reading or parsing YAML file: ${err}`);
+    monitor.error(`Error reading or parsing YAML file: ${err}`);
     throw err;
   }
 }

@@ -9,7 +9,7 @@ export default class User {
   private email: Optional<string>;
   private sessionToken: Optional<string>;
   private refreshToken: Optional<string>;
-  private role: Role | null;
+  private role: Optional<Role>;
 
   constructor({
     id,
@@ -21,10 +21,10 @@ export default class User {
   }: {
     id?: UUID;
     username: string;
-    role?: Role | null;
-    password?: string | null;
-    email?: string | null;
-    sessionToken?: string | null;
+    role?: Optional<Role>;
+    password?: Optional<string>;
+    email?: Optional<string>;
+    sessionToken?: Optional<string>;
   }) {
     this.id = id || randomUUID();
     this.username = username;
@@ -52,7 +52,7 @@ export default class User {
     return this.id;
   }
 
-  public get Password(): string | null {
+  public get Password(): Optional<string> {
     return this.password;
   }
 
@@ -60,29 +60,29 @@ export default class User {
     return this.username;
   }
 
-  public get SessionToken(): string | null {
+  public get SessionToken(): Optional<string> {
     return this.sessionToken;
   }
 
-  public get RefreshToken(): string | null {
+  public get RefreshToken(): Optional<string> {
     return this.refreshToken;
   }
 
-  public get Email(): string | null {
+  public get Email(): Optional<string> {
     return this.email;
   }
 
-  public set SessionToken(sessionToken: string | null) {
+  public set SessionToken(sessionToken: Optional<string>) {
 
     this.sessionToken = sessionToken;
   }
 
-  public set RefreshToken(refreshToken: string | null) {
+  public set RefreshToken(refreshToken: Optional<string>) {
 
     this.refreshToken = refreshToken;
   }
 
-  public get Role(): Role | null {
+  public get Role(): Optional<Role> {
     return this.role;
   }
 

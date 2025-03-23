@@ -6,7 +6,7 @@ import { ICreateUser, IDeleteUser, IGetAllUsers, IGetUser } from "../../ports/us
 
 export default class DeleteUser implements IDeleteUser {
     constructor(private userRepo: IUserRepo) {}
-    async run(id: UUID): Promise<boolean> {
+    public async run(id: UUID): Promise<boolean> {
         return await this.userRepo.deleteUser(id);
     }
 }

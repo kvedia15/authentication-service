@@ -2,6 +2,7 @@ import { UUID } from "crypto";
 import Role from "../domain/role";
 import User from "../domain/user";
 import { Optional } from "../domain/result";
+import { Permission } from "../domain/permission";
 
 export interface IRegisterUser {
   //provide name and password , if registration is successful return the user object else return null
@@ -63,5 +64,25 @@ export interface IUpdateUser {
 }
 
 export interface IDeleteUser {
+  run(id: UUID): Promise<boolean>;
+}
+
+export interface ICreatePermission {
+  run(permission: Permission): Promise<Optional<Permission>>;
+}
+
+export interface IGetAllPermissions {
+  run(limit: number, offset: number): Promise<Permission[]>;
+}
+
+export interface IGetPermission {
+  run(id: UUID): Promise<Optional<Permission>>;
+}
+
+export interface IUpdatePermission {
+  run(permission: Permission): Promise<Optional<Permission>>;
+}
+
+export interface IDeletePermission {
   run(id: UUID): Promise<boolean>;
 }

@@ -9,7 +9,7 @@ export class UpdateRole implements IUpdateRole {
     ) {
         this.roleRepo = roleRepo;
     }
-    run(role: Role): Promise<Role | null> {
+    public async run(role: Role): Promise<Role | null> {
         return this.roleRepo.updateRole(role);
     }
 }

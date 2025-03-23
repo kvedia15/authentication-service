@@ -11,7 +11,7 @@ export function toUserResponse(user: Optional<User>, message: string) {
           id: user.Id,
           username: user.Username,
           email: user.Email,
-          role: user.Role?.roleType,
+          role: user.Role,
         }
       : null,
     message,

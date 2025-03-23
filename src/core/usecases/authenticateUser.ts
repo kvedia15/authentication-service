@@ -23,6 +23,8 @@ export class AuthenticateUser implements IAuthenticateUser {
     if (!passwordHash) {
       return null;
     }
+
+    //TODO: use secondary repo for passwordVerification, can test where password always match
     const isMatch = await bcrypt.compare(password, passwordHash);
     if (!isMatch) {
       monitor.info(`User ${userFound?.Username} is not match`)

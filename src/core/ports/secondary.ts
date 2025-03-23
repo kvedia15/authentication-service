@@ -2,6 +2,8 @@ import { UUID } from "crypto";
 import Role from "../domain/role";
 import User from "../domain/user";
 import { Optional } from "../domain/result";
+import { Permission } from "../domain/permission";
+import { get } from "http";
 
 export interface IUserRepo {
   createUser(
@@ -30,4 +32,13 @@ export interface IRoleRepo {
   updateRole(role: Role): Promise<Optional<Role>>;
   deleteRole(id: UUID): Promise<boolean>;
   getLeastPrivilegedRole(): Promise<Optional<Role>>;
+}
+
+export interface IPermissionRepo {
+  createPermission(permission: Permission): Promise<Optional<Permission>>
+  getAllPermissions(limit: number, offset: number): Promise<Permission[]>
+  getPermission(id: UUID): Promise<Optional<Permission>>
+  getPermissionsByRole(id: UUID): Promise<Permission[]> 
+  updatePermission(permission: Permission): Promise<Optional<Permission>>
+  deletePermission(id: UUID): Promise<boolean>
 }

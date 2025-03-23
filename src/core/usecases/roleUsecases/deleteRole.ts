@@ -9,7 +9,7 @@ export class DeleteRole implements IDeleteRole {
     ) {
         this.roleRepo = roleRepo;
     }
-    run(id: UUID): Promise<boolean> {
+    public async run(id: UUID): Promise<boolean> {
         return this.roleRepo.deleteRole(id);
     }
 }

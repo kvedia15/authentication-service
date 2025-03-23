@@ -12,7 +12,7 @@ export class RegisterUser implements IRegisterUser {
     this.userRepo = userRepo;
     this.roleRepo = roleRepo;
   }
-  async run(
+  public async run(
     username: string,
     password: string,
     email: string,

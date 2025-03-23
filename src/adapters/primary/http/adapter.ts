@@ -6,11 +6,14 @@ import {
   ICreateRole,
   IDeleteRole,
   IGetAllRoles,
+  IGetAllUsers,
   IGetRole,
+  IGetUser,
   ILogoutUser,
   IRefreshToken,
   IRegisterUser,
   IUpdateRole,
+  IUpdateUser,
   IValidateToken,
 } from "../../../core/ports/usecases";
 import monitor from "../../../monitor";
@@ -29,7 +32,10 @@ export class HttpAdapter implements PrimaryAdapter {
     getAllRoles: IGetAllRoles,
     getRole: IGetRole,
     updateRole: IUpdateRole,
-    deleteRole: IDeleteRole
+    deleteRole: IDeleteRole,
+    getUser: IGetUser,
+    getAllUsers: IGetAllUsers,
+    updateUser: IUpdateUser
   ) {
     let server = new Server(
       registerUserUsecase,
@@ -41,7 +47,10 @@ export class HttpAdapter implements PrimaryAdapter {
       getAllRoles,
       getRole,
       updateRole,
-      deleteRole
+      deleteRole,
+      getUser,
+      getAllUsers,
+      updateUser
     );
     this.app = server.app;
     this.port = port;

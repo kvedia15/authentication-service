@@ -9,7 +9,7 @@ export class GetAllRoles implements IGetAllRoles {
     ) {
         this.roleRepo = roleRepo;
     }
-    run(limit: number, offset: number): Promise<Role[]> {
+    public async run(limit: number, offset: number): Promise<Role[]> {
         return this.roleRepo.getAllRoles(limit, offset);
     }
 }

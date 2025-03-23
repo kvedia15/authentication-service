@@ -15,7 +15,7 @@ export class RefreshToken implements IRefreshToken {
       this.sessionTokenRepo = sessionTokenRepo;
       this.validateToken = validateToken;
     }
-    async run(refreshToken: string): Promise<User | null> {
+    public async run(refreshToken: string): Promise<User | null> {
         try {
             let user = await this.refreshTokenRepo.getUserFromToken(refreshToken);  
             
@@ -43,7 +43,7 @@ export class RefreshToken implements IRefreshToken {
             if (!sessionToken) {
                 sessionToken = await this.sessionTokenRepo.setToken(userFetched.Username, null);
             }
-            return new User({id: userFetched.Id, username: userFetched.Username, password: userFetched.Password, email: userFetched.Email, sessionToken: sessionToken});
+            return userFetched
 
         } catch (error) {
             monitor.error("Error during refresh token process:", error);

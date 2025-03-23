@@ -20,6 +20,15 @@ import { GetAllRoles } from "./core/usecases/roleUsecases/getAllRoles";
 import { GetRole } from "./core/usecases/roleUsecases/getRole";
 import { UpdateRole } from "./core/usecases/roleUsecases/updateRole";
 import { DeleteRole } from "./core/usecases/roleUsecases/deleteRole";
+import GetUser from "./core/usecases/userUsecases/getUser";
+import GetAllUsers from "./core/usecases/userUsecases/getAllUsers";
+import UpdateUser from "./core/usecases/userUsecases/updateUser";
+import { InMemPermissionRepo } from "./adapters/secondary/permission_repo/inmem";
+import { CreatePermission } from "./core/usecases/permissionUsecases/createPermission";
+import { GetAllPermissions } from "./core/usecases/permissionUsecases/getAllPermissions";
+import { GetPermission } from "./core/usecases/permissionUsecases/getPermission";
+import { UpdatePermission } from "./core/usecases/permissionUsecases/updatePermission";
+import { DeletePermission } from "./core/usecases/permissionUsecases/deletePermission";
 
 export class Application {
   private settings: Settings;
@@ -62,7 +71,7 @@ export class Application {
       TokenRepoType.SESSION
     )
     const roleRepo = new InMemRoleRepo()
-
+    const permissionRepo = new InMemPermissionRepo()
     //usecases
 
     //user
@@ -72,17 +81,31 @@ export class Application {
       refreshTokenRepo,
       sessionTokenRepo
     );
-    const validateToken = new ValidateToken(this.settings.jwtSessionSecret, userRepo);
+    const getUser = new GetUser(userRepo);
+    const getAllUsers = new GetAllUsers(userRepo);
+    const updateUser = new UpdateUser(userRepo);
     const logoutUser = new LogoutUser(userRepo, refreshTokenRepo, sessionTokenRepo);
+
+    //token
+    const validateToken = new ValidateToken(this.settings.jwtSessionSecret, userRepo);
     const refreshToken = new RefreshToken(userRepo, refreshTokenRepo, sessionTokenRepo, validateToken);
     
     //role
     const createRole = new CreateRole(roleRepo);
     const getAllRoles = new GetAllRoles(roleRepo);
-    const getRole = new GetRole(roleRepo);
+    const getRole = new GetRole(roleRepo, permissionRepo);
     const updateRole = new UpdateRole(roleRepo);
     const deleteRole = new DeleteRole(roleRepo);
     
+    //permission
+    const createPermission = new CreatePermission(permissionRepo);
+    const getAllPermissions = new GetAllPermissions(permissionRepo);
+    const getPermissions = new GetPermission(permissionRepo);
+    const updatePermission = new UpdatePermission(permissionRepo);  
+    const deletePermission = new DeletePermission(permissionRepo);
+    
+
+
     //primaries
     const startUpAdapter = new StartupAdapter(registerUser, createRole, this.settings.ownerUser);
     const httpAdapter = new HttpAdapter(
@@ -96,7 +119,10 @@ export class Application {
       getAllRoles,
       getRole,
       updateRole,
-      deleteRole
+      deleteRole,
+      getUser,
+      getAllUsers,
+      updateUser
     );
     primaryAdapters.push(httpAdapter);
     primaryAdapters.push(startUpAdapter);

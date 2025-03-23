@@ -1,31 +1,20 @@
 import { randomUUID, UUID } from "crypto";
+import { Optional } from "./result";
+import { Permission } from "./permission";
 
 
 
-export class Permission {
-  id: string;
-  name: string;
-  permissionAction: string;
-
-  constructor({
-    id,
-    name,
-    permissionAction,
-  }: {
-    id: string;
-    name: string;
-    permissionAction: string;
-  }) {this.id = id
-    this.name = name
-    this.permissionAction = permissionAction
-  }
-}
 
 export enum RoleType {
   OWNER = "OWNER",
   ADMIN = "ADMIN",
   USER = "USER",
 }
+
+export function toRoleType(value: string): Optional<RoleType> {
+  return Object.values(RoleType).includes(value as RoleType) ? (value as RoleType) : null;
+}
+
 
 export default class Role {
   id: UUID;

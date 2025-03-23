@@ -6,10 +6,16 @@ import {
   IRefreshToken,
   IGetAllRoles,
   IValidateToken,
+  IGetUser,
+  IGetAllUsers,
+  IUpdateUser,
+  ICreateUser,
 } from "../../../../core/ports/usecases";
 import { toUserResponse } from "../serialiser";
-import { RoleType } from "../../../../core/domain/role";
+import { RoleType, toRoleType } from '../../../../core/domain/role';
 import { authorize } from "../middlewares/authorization";
+import User from "../../../../core/domain/user";
+import { UUID } from 'crypto';
 
 const userRouter = Router();
 
@@ -19,8 +25,11 @@ export class UserRoutes {
     private authenticateUserUsecase: IAuthenticateUser,
     private logoutUserUsecase: ILogoutUser,
     private refreshTokenUsecase: IRefreshToken,
-    private getAllRoles: IGetAllRoles,
-    private validateToken: IValidateToken
+    private getAllRolesUsecase: IGetAllRoles,
+    private validateToken: IValidateToken,
+    private getUserUsecase: IGetUser,
+    private getAllUsersUsecase: IGetAllUsers,
+    private updateUserUsecase: IUpdateUser,
   ) {
     this.initRoutes();
   }
@@ -30,14 +39,43 @@ export class UserRoutes {
   }
 
   private initRoutes() {
-    userRouter.post("/api/v1/users", async (req, res) => {
-      const { username, password, email } = req.body;
+    userRouter.get("/api/v1/users", authorize([RoleType.OWNER, RoleType.ADMIN], this.validateToken), async (req, res) => {
+      let limit = 10;
+      let offset = 0;
+      if (req.query.limit) {
+        limit = parseInt(req.query.limit as string, 10);
+      }
+      if (req.query.offset) {
+        offset = parseInt(req.query.offset as string, 10);
+      }
+      const users = await this.getAllUsersUsecase.run(limit, offset);
 
+      let userRespArray : any = []
+      for (const user of users) {
+
+        let userResp = toUserResponse(user, "");
+        userRespArray.push(userResp)
+      }
+      return res.status(200).json(userRespArray);
+    })
+
+
+
+
+    userRouter.post("/api/v1/users", async (req, res) => {
+      const { username, password, email, role } = req.body;
+      let assignedRole = role;
+      if (!assignedRole) {
+        assignedRole = RoleType.USER;
+      } else {
+        assignedRole = toRoleType(assignedRole.roleType);
+      }
       if (!username || !password || !email) {
         return res
           .status(400)
           .json(toUserResponse(null, "Missing required fields"));
       }
+
 
       const registeredUser = await this.registerUserUsecase.run(
         username,
@@ -54,46 +92,6 @@ export class UserRoutes {
       return res.status(201).json(toUserResponse(registeredUser.user, "User created successfully"));
     });
 
-    userRouter.post(
-      "/api/v1/users/admin",
-      authorize([RoleType.OWNER], this.validateToken),
-      async (req, res) => {
-        const { username, password, email } = req.body;
-
-        if (!username || !password || !email) {
-          return res
-            .status(400)
-            .json(toUserResponse(null, "Missing required fields"));
-        }
-
-        const roles = await this.getAllRoles.run(30, 0);
-        const adminRole = roles.find(
-          (role) => role.roleType === RoleType.ADMIN
-        );
-        if (!adminRole) {
-          return res
-            .status(400)
-            .json(
-              toUserResponse(
-                null,
-                "Admin role not found, please create one before registering an admin user"
-              )
-            );
-        }
-        const registeredUser = await this.registerUserUsecase.run(
-          username,
-          password,
-          email,
-          adminRole
-        );
-        if (!registeredUser.user) {
-          return res
-            .status(400)
-            .json(toUserResponse(null, registeredUser.message));
-        }
-        return res.status(201).json(toUserResponse(registeredUser.user, ""));
-      }
-    );
 
     userRouter.post("/api/v1/users/login", async (req, res) => {
       try {
@@ -213,7 +211,24 @@ export class UserRoutes {
           .json(toUserResponse(null, "Internal server error"));
       }
     });
+    userRouter.put("/api/v1/users/:id", async (req, res) => {
+      const { id } = req.params;
+      if (!id) {
+        return res
+          .status(400)
+          .json(toUserResponse(null, "Missing user id"));
+      } 
+      const { username, password, email } = req.body;
+      const user = await this.updateUserUsecase.run(new User({
+        id: id as UUID,
+        username: username,
+        password: password,
+        email: email
+      }));
+      return res.status(200).json(toUserResponse(user, ""));
+    });
   }
+
 }
 
 export default userRouter;

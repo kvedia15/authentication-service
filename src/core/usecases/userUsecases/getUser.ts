@@ -5,7 +5,7 @@ import { IGetUser } from "../../ports/usecases";
 
 export default class GetUser implements IGetUser {
     constructor(private userRepo: IUserRepo) {}
-    async run(username: string): Promise<Optional<User>> {
+    public async run(username: string): Promise<Optional<User>> {
         return await this.userRepo.getUser(username);
     }
 }

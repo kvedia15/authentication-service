@@ -4,11 +4,14 @@ import {
   ICreateRole,
   IDeleteRole,
   IGetAllRoles,
+  IGetAllUsers,
   IGetRole,
+  IGetUser,
   ILogoutUser,
   IRefreshToken,
   IRegisterUser,
   IUpdateRole,
+  IUpdateUser,
   IValidateToken,
 } from "../../../core/ports/usecases";
 import morgan from "morgan";
@@ -29,7 +32,9 @@ export class Server {
   getRoleUsecase: IGetRole;
   updateRoleUsecase: IUpdateRole;
   deleteRoleUsecase: IDeleteRole;
-
+  getUserUsecase: IGetUser;
+  getAllUsersUsecase: IGetAllUsers;
+  updateUserUsecase: IUpdateUser;
 
   public constructor(
     registerUserUsecase: IRegisterUser,
@@ -41,7 +46,10 @@ export class Server {
     getAllRolesUsecase: IGetAllRoles,
     getRoleUsecase: IGetRole,
     updateRoleUsecase: IUpdateRole,
-    deleteRoleUsecase: IDeleteRole
+    deleteRoleUsecase: IDeleteRole,
+    getUserUsecase: IGetUser,
+    getAllUsersUsecase: IGetAllUsers,
+    updateUserUsecase: IUpdateUser,
   ) {
     this.app = express();
     this.registerUserUsecase = registerUserUsecase;
@@ -53,7 +61,11 @@ export class Server {
     this.getAllRolesUsecase = getAllRolesUsecase;
     this.getRoleUsecase = getRoleUsecase;
     this.updateRoleUsecase = updateRoleUsecase;
-    this.deleteRoleUsecase = deleteRoleUsecase
+    this.deleteRoleUsecase = deleteRoleUsecase;
+
+    this.getUserUsecase = getUserUsecase;
+    this.getAllUsersUsecase = getAllUsersUsecase;
+    this.updateUserUsecase = updateUserUsecase; 
 
     //middlewares
 
@@ -91,7 +103,10 @@ export class Server {
       this.logoutUserUsecase,
       this.refreshTokenUsecase,
       this.getAllRolesUsecase,
-      this.validateTokenUsecase
+      this.validateTokenUsecase,
+      this.getUserUsecase,
+      this.getAllUsersUsecase,
+      this.updateUserUsecase
     )
 
     const roleRoutes = new RoleRoutes(

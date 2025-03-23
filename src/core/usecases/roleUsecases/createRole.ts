@@ -10,7 +10,7 @@ export class CreateRole implements ICreateRole {
     ) {
         this.roleRepo = roleRepo;
     }
-    async run(role: Role): Promise<Optional<Role>> {
+    public async run(role: Role): Promise<Optional<Role>> {
         const createdRole = await this.roleRepo.createRole(role);
         return createdRole
     }
